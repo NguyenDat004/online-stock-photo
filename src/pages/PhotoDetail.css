@@ -1,0 +1,146 @@
+/* Container tổng thể */
+.photo-detail-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center; /* Canh giữa nội dung */
+}
+
+/* Ảnh chính và thông tin ảnh */
+  /* Ảnh chính */
+  .photo-detail-image {
+    flex: 1 1 450px;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+  }
+  
+  .photo-detail-image:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Thông tin ảnh */
+  .photo-detail-info {
+    flex: 1 1 350px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .photo-detail-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .photo-detail-info p {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+    color: #555;
+    line-height: 1.5;
+  }
+  
+  .photo-detail-price {
+    color: #28a745;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 1rem 0;
+  }
+  
+  /* Nút hành động */
+  .photo-detail-btn {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    transition: 0.3s ease;
+    width: fit-content;
+  }
+  
+  .photo-detail-btn:hover {
+    background-color: #218838;
+  }
+  
+  /* Modal toàn màn hình */
+  .photo-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  
+  .photo-modal-image {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 0 20px #ffffffb3;
+    animation: fadeInZoom 0.4s ease;
+  }
+  
+  .photo-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  /* Hiệu ứng mở modal */
+  @keyframes fadeInZoom {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Responsive cho mobile */
+  @media (max-width: 768px) {
+    .photo-detail-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .photo-detail-image,
+    .photo-detail-info {
+      max-width: 100%;
+      flex: 1 1 100%;
+    }
+  
+    .photo-detail-title {
+      text-align: center;
+    }
+  
+    .photo-detail-info p,
+    .photo-detail-price {
+      text-align: center;
+    }
+  
+    .photo-detail-btn {
+      margin: auto;
+    }
+  }
+  
