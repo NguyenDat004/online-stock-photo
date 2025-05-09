@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 function Upload() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category_id: '',
-    price: '',
+    title: "",
+    description: "",
+    category_id: "",
+    price: "",
     image: null,
   });
 
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/categories');
+        const res = await axios.get("http://localhost:5000/api/categories");
         setCategories(res.data); // [{ id, name }]
       } catch (err) {
-        console.error('Lỗi khi lấy danh mục:', err);
+        console.error("Lỗi khi lấy danh mục:", err);
       }
     };
 
@@ -42,19 +42,19 @@ function Upload() {
     e.preventDefault();
 
     if (!formData.image) {
-      setStatus('❌ Vui lòng chọn ảnh để tải lên.');
+      setStatus("❌ Vui lòng chọn ảnh để tải lên.");
       return;
     }
 
     try {
-      setStatus('🚀 Đang tải ảnh lên...');
+      setStatus("🚀 Đang tải ảnh lên...");
 
       const imageData = new FormData();
-      imageData.append('file', formData.image);
-      imageData.append('upload_preset', 'StockPhoto');
+      imageData.append("file", formData.image);
+      imageData.append("upload_preset", "StockPhoto");
 
       const cloudinaryRes = await axios.post(
-        'https://api.cloudinary.com/v1_1/dhwtef2u8/image/upload',
+        "https://api.cloudinary.com/v1_1/dhwtef2u8/image/upload",
         imageData
       );
 
@@ -62,7 +62,7 @@ function Upload() {
       const token = await auth.currentUser.getIdToken();
 
       await axios.post(
-        'http://localhost:5000/api/photos/upload',
+        "http://localhost:5000/api/photos/upload",
         {
           title: formData.title,
           description: formData.description,
@@ -78,12 +78,14 @@ function Upload() {
         }
       );
 
-      setStatus('✅ Tải ảnh lên thành công!');
-      localStorage.setItem('photo_uploaded', 'true');
-      navigate('/');
+      setStatus("✅ Tải ảnh lên thành công!");
+      localStorage.setItem("photo_uploaded", "true");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (err) {
-      console.error('❌ Upload thất bại:', err);
-      setStatus('❌ Tải ảnh lên thất bại.');
+      console.error("❌ Upload thất bại:", err);
+      setStatus("❌ Tải ảnh lên thất bại.");
     }
   };
 
@@ -91,7 +93,11 @@ function Upload() {
     <div className="container mt-5 mb-5">
       <h2 className="text-center mb-4">Tải ảnh lên</h2>
       {status && (
-        <div className={`alert ${status.includes('✅') ? 'alert-success' : 'alert-danger'}`}>
+        <div
+          className={`alert ${
+            status.includes("✅") ? "alert-success" : "alert-danger"
+          }`}
+        >
           {status}
         </div>
       )}
@@ -142,7 +148,9 @@ function Upload() {
           required
           className="form-control mb-4"
         />
-        <button type="submit" className="btn btn-success w-100">Tải lên</button>
+        <button type="submit" className="btn btn-success w-100">
+          Tải lên
+        </button>
       </form>
     </div>
   );

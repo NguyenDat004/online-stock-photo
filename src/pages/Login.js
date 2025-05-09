@@ -1,13 +1,13 @@
-// src/pages/Login.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -19,34 +19,51 @@ function Login() {
     const { email, password } = formData;
 
     if (!email || !password) {
-      return setError('Vui lòng nhập đầy đủ thông tin.');
+      toast.error("Vui lòng nhập đầy đủ thông tin.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-
       const token = await user.getIdToken();
 
-      // Gửi token đến backend
-      const res = await axios.post('http://localhost:5000/api/auth/login', { token });
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        token,
+      });
 
-      console.log('✅ Đăng nhập backend:', res.data);
+      toast.success("Đăng nhập thành công!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
 
-      setError(''); // Xóa thông báo lỗi nếu có
-      navigate('/'); // Chuyển hướng về trang chính sau khi đăng nhập thành công
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
     } catch (err) {
-      console.error('❌ Lỗi đăng nhập:', err);
-      setError('Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.');
+      console.error("Lỗi đăng nhập:", err);
+      toast.error("Đăng nhập thất bại. Kiểm tra email/mật khẩu.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
   return (
     <div className="container mt-5 mb-5">
       <h2 className="text-center mb-4">Đăng nhập</h2>
-      <form onSubmit={handleSubmit} className="mx-auto" style={{ maxWidth: '400px' }}>
-        {error && <div className="alert alert-danger">{error}</div>}
-
+      <form
+        onSubmit={handleSubmit}
+        className="mx-auto"
+        style={{ maxWidth: "400px" }}
+      >
         <div className="mb-3">
           <label className="form-label">Email:</label>
           <input
@@ -71,8 +88,13 @@ function Login() {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary w-100">Đăng nhập</button>
+        <button type="submit" className="btn btn-primary w-100">
+          Đăng nhập
+        </button>
       </form>
+
+      {/* Container cho Toast */}
+      <ToastContainer />
     </div>
   );
 }

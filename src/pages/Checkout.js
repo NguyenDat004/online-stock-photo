@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 function Checkout() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    address: '',
-    cardNumber: '',
-    expiry: '',
-    cvc: '',
+    name: "",
+    email: "",
+    address: "",
+    cardNumber: "",
+    expiry: "",
+    cvc: "",
   });
 
   const [cartItems, setCartItems] = useState([]);
@@ -25,17 +25,20 @@ function Checkout() {
 
         try {
           const token = await user.getIdToken();
-          const res = await axios.get(`http://localhost:5000/api/cart/${user.uid}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const res = await axios.get(
+            `http://localhost:5000/api/cart/${user.uid}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
           setCartItems(res.data);
           const total = res.data.reduce((sum, item) => sum + item.price, 0);
           setTotal(total);
         } catch (err) {
-          console.error('❌ Lỗi khi lấy giỏ hàng:', err);
+          console.error("❌ Lỗi khi lấy giỏ hàng:", err);
         }
       });
 
@@ -46,9 +49,9 @@ function Checkout() {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ 
+    setFormData({
       ...formData,
-      [e.target.name]: e.target.value 
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -62,7 +65,7 @@ function Checkout() {
       const token = await user.getIdToken();
 
       await axios.post(
-        'http://localhost:5000/api/checkout',
+        "http://localhost:5000/api/checkout",
         {
           userId: user.uid,
           items: cartItems,
@@ -81,11 +84,11 @@ function Checkout() {
 
       // Chuyển sang trang Download sau khi thanh toán
       setTimeout(() => {
-        navigate('/download');
-      }, 1000);
+        navigate("/download");
+      }, 3000);
     } catch (err) {
-      console.error('❌ Lỗi khi thanh toán:', err);
-      alert('Thanh toán thất bại');
+      console.error("❌ Lỗi khi thanh toán:", err);
+      alert("Thanh toán thất bại");
     }
   };
 
@@ -116,7 +119,12 @@ function Checkout() {
                   {cartItems.map((item) => (
                     <tr key={item.photo_id}>
                       <td>
-                        <img src={item.image_url} alt={item.title} width="100" className="rounded" />
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          width="100"
+                          className="rounded"
+                        />
                       </td>
                       <td>{item.title}</td>
                       <td>{Number(item.price).toLocaleString()} VNĐ</td>
@@ -124,42 +132,91 @@ function Checkout() {
                   ))}
                 </tbody>
               </table>
-              <h4 className="text-end">Tổng cộng: {Number(total).toLocaleString()} VNĐ</h4>
+              <h4 className="text-end">
+                Tổng cộng: {Number(total).toLocaleString()} VNĐ
+              </h4>
 
               <form onSubmit={handleSubmit} className="mt-4">
                 <div className="row">
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Họ và tên</label>
-                      <input type="text" className="form-control" name="name" value={formData.name} onChange={handleChange} required />
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Email</label>
-                      <input type="email" className="form-control" name="email" value={formData.email} onChange={handleChange} required />
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Địa chỉ</label>
-                      <input type="text" className="form-control" name="address" value={formData.address} onChange={handleChange} required />
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                   </div>
 
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">Số thẻ</label>
-                      <input type="text" className="form-control" name="cardNumber" value={formData.cardNumber} onChange={handleChange} required maxLength={16} />
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="cardNumber"
+                        value={formData.cardNumber}
+                        onChange={handleChange}
+                        required
+                        maxLength={16}
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Ngày hết hạn</label>
-                      <input type="text" className="form-control" placeholder="MM/YY" name="expiry" value={formData.expiry} onChange={handleChange} required />
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="MM/YY"
+                        name="expiry"
+                        value={formData.expiry}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                     <div className="mb-3">
                       <label className="form-label">CVC</label>
-                      <input type="text" className="form-control" name="cvc" value={formData.cvc} onChange={handleChange} required maxLength={3} />
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="cvc"
+                        value={formData.cvc}
+                        onChange={handleChange}
+                        required
+                        maxLength={3}
+                      />
                     </div>
                   </div>
                 </div>
 
-                <button type="submit" className="btn btn-success mt-3">Xác nhận thanh toán</button>
+                <button type="submit" className="btn btn-success mt-3">
+                  Xác nhận thanh toán
+                </button>
               </form>
             </>
           )}

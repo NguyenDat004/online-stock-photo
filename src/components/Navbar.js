@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import CSS toast
 
 function Navbar() {
   const [user, setUser] = useState(null);
@@ -15,10 +17,12 @@ function Navbar() {
 
       if (currentUser) {
         try {
-          const res = await axios.get(`http://localhost:5000/api/users/${currentUser.email}`);
+          const res = await axios.get(
+            `http://localhost:5000/api/users/${currentUser.email}`
+          );
           setUserData(res.data); // res.data.role, res.data.full_name, ...
         } catch (err) {
-          console.error('❌ Không lấy được thông tin người dùng từ server:', err);
+          console.error("Không lấy được thông tin người dùng từ server:", err);
         }
       } else {
         setUserData(null);
@@ -30,42 +34,70 @@ function Navbar() {
 
   const handleLogout = async () => {
     const auth = getAuth();
-    await signOut(auth);
-    setUser(null);
-    setUserData(null);
-    navigate('/login');
+    try {
+      await signOut(auth);
+      setUser(null);
+      setUserData(null);
+      toast.success("Bạn đã đăng xuất thành công!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      setTimeout(() => navigate("/login"), 2000); // Chờ toast hiện xong rồi mới chuyển trang
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+      toast.error("Không thể đăng xuất. Vui lòng thử lại.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    }
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-      <Link className="navbar-brand" to="/">📷 Stock Photo</Link>
-      <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <Link className="navbar-brand" to="/">
+        📷 Stock Photo
+      </Link>
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
         <span className="navbar-toggler-icon"></span>
       </button>
-
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav me-auto">
           <li className="nav-item">
-            <Link className="nav-link" to="/">Trang chủ</Link>
+            <Link className="nav-link" to="/">
+              Trang chủ
+            </Link>
           </li>
           {user && (
             <li className="nav-item">
-              <Link className="nav-link" to="/upload">Tải ảnh lên</Link>
+              <Link className="nav-link" to="/upload">
+                Tải ảnh lên
+              </Link>
             </li>
           )}
           {user && (
             <li className="nav-item">
-              <Link className="nav-link" to="/cart">Giỏ hàng</Link>
+              <Link className="nav-link" to="/cart">
+                Giỏ hàng
+              </Link>
             </li>
           )}
           {user && (
             <li className="nav-item">
-              <Link className="nav-link" to="/download">Kho Ảnh</Link>
+              <Link className="nav-link" to="/download">
+                Kho Ảnh
+              </Link>
             </li>
           )}
-          {userData?.role === 'admin' && (
+          {userData?.role === "admin" && (
             <li className="nav-item">
-              <Link className="nav-link text-warning" to="/admin">Trang quản trị</Link>
+              <Link className="nav-link text-warning" to="/admin">
+                Trang quản trị
+              </Link>
             </li>
           )}
         </ul>
@@ -77,7 +109,10 @@ function Navbar() {
                 👤 {user.displayName || user.email}
               </li>
               <li className="nav-item">
-                <button className="btn btn-outline-light" onClick={handleLogout}>
+                <button
+                  className="btn btn-outline-light"
+                  onClick={handleLogout}
+                >
                   Đăng xuất
                 </button>
               </li>
@@ -85,15 +120,20 @@ function Navbar() {
           ) : (
             <>
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Đăng nhập</Link>
+                <Link className="nav-link" to="/login">
+                  Đăng nhập
+                </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/register">Đăng ký</Link>
+                <Link className="nav-link" to="/register">
+                  Đăng ký
+                </Link>
               </li>
             </>
           )}
         </ul>
       </div>
+      <ToastContainer /> {/* Thêm ToastContainer để hiển thị thông báo */}
     </nav>
   );
 }
