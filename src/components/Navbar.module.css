@@ -1,0 +1,33 @@
+/* Navbar.module.css */
+
+.navbarCustom {
+  background-color: #0d1b2a; /* Navy dark */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.3s ease;
+}
+
+.brand {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+}
+
+.navLink {
+  color: #ffffff !important;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navLink:hover {
+  color: #00d4ff !important; /* Neon blue */
+  text-decoration: none;
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #ffffff !important;
+  color: #0d1b2a !important;
+  border-color: #ffffff !important;
+}

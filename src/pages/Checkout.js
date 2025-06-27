@@ -122,8 +122,9 @@ function Checkout() {
                         <img
                           src={item.image_url}
                           alt={item.title}
-                          width="100"
-                          className="rounded"
+                          width="150"
+                          height="150"
+                          className="rounded object-cover border border-radius-3"
                         />
                       </td>
                       <td>{item.title}</td>
@@ -133,7 +134,10 @@ function Checkout() {
                 </tbody>
               </table>
               <h4 className="text-end">
-                Tổng cộng: {Number(total).toLocaleString()} VNĐ
+                Tổng cộng:{" "}
+                <strong className="text-danger">
+                  {Number(total).toLocaleString()} VNĐ
+                </strong>
               </h4>
 
               <form onSubmit={handleSubmit} className="mt-4">

@@ -282,7 +282,7 @@ function PhotoDetail() {
           </span>
         </div>
       )}
-      <ToastContainer />;
+      <ToastContainer />
     </div>
   );
 }

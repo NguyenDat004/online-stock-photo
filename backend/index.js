@@ -1,61 +1,62 @@
 // Nạp biến môi trường từ file .env (ví dụ PORT, DB config, v.v.)
-require('dotenv').config();
+require("dotenv").config();
 
 // Import các thư viện cần thiết
-const express = require('express');      // Framework xây dựng server
-const cors = require('cors');            // Hỗ trợ truy cập từ frontend (CORS)
-const app = express();                   // Khởi tạo ứng dụng Express
+const express = require("express");
+const cors = require("cors");
+const app = express();
 
-// Kết nối PostgreSQL (file này chứa pool để thao tác DB)
-const pool = require('./config/db');
+// Kết nối PostgreSQL và Firebase
+const pool = require("./config/db");
+const admin = require("./config/firebase"); // Firebase Admin SDK
 
-// Kết nối Firebase Admin SDK (dùng để xác thực người dùng)
-const admin = require('./config/firebase');
+// Middleware xử lý chung
+app.use(cors());
+app.use(express.json());
 
-// Các middleware xử lý chung
-app.use(cors());                         // Cho phép frontend gọi API
-app.use(express.json());                 // Tự động parse JSON từ body request
+// ✅ Cho phép truy cập ảnh avatar, ảnh upload từ thư mục "uploads"
+app.use("/uploads", express.static("uploads"));
 
-// Định nghĩa route xác thực người dùng
-const authRoutes = require('./routes/authRoutes');
-app.use('/api/auth', authRoutes);
+// ----------------- Định nghĩa các route -----------------
 
-// -------------------------
-// Định nghĩa route lấy ảnh
-// -------------------------
-const photoRoutes = require('./routes/photos');
-app.use('/api/photos', photoRoutes);  // Route lấy ảnh từ DB
+// Auth - Đăng ký, đăng nhập, xác thực người dùng
+const authRoutes = require("./routes/authRoutes");
+app.use("/api/auth", authRoutes);
 
-// Định nghĩa route giỏ hàng
-const cartRouter = require('./routes/cart');
-app.use('/api/cart', cartRouter);
+// Photo - Xử lý ảnh (upload, lấy ảnh, v.v.)
+const photoRoutes = require("./routes/photos");
+app.use("/api/photos", photoRoutes);
 
-// Định nghĩa route người dùng
-const userRoutes = require('./routes/users'); // Route lấy thông tin người dùng
-const categoryRoutes = require('./routes/categories'); // Route lấy danh sách ảnh theo danh mục
+// Cart - Giỏ hàng
+const cartRouter = require("./routes/cart");
+app.use("/api/cart", cartRouter);
 
-app.use('/api/users', userRoutes);
-app.use('/api/categories', categoryRoutes);
+// Users - Thông tin người dùng
+const userRoutes = require("./routes/users");
+app.use("/api/users", userRoutes);
 
-// Định nghĩa route thanh toán
-const checkoutRoutes = require('./routes/checkout'); // Route thanh toán
-app.use('/api/checkout', checkoutRoutes);
+// Categories - Danh mục ảnh
+const categoryRoutes = require("./routes/categories");
+app.use("/api/categories", categoryRoutes);
 
-// Định nghĩa route tải ảnh về
-// Route này sẽ trả về danh sách ảnh đã tải về của người dùng
-const downloadRoutes = require('./routes/downloads');
-app.use('/api/downloads', downloadRoutes);
+// Checkout - Thanh toán
+const checkoutRoutes = require("./routes/checkout");
+app.use("/api/checkout", checkoutRoutes);
 
-// Định nghĩa route đánh giá ảnh
-const reviewRoutes = require('./routes/reviews');
-app.use('/api/reviews', reviewRoutes);
+// Downloads - Kho ảnh đã mua
+const downloadRoutes = require("./routes/downloads");
+app.use("/api/downloads", downloadRoutes);
 
-// Route test backend đang hoạt động
-app.get('/', (req, res) => {
-  res.send('🔥 Backend đang hoạt động!');
+// Reviews - Đánh giá ảnh
+const reviewRoutes = require("./routes/reviews");
+app.use("/api/reviews", reviewRoutes);
+
+// Route test server hoạt động
+app.get("/", (req, res) => {
+  res.send("🔥 Backend đang hoạt động!");
 });
 
-// Khởi chạy server ở cổng PORT (mặc định 5000)
+// ----------------- Khởi động Server -----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server chạy tại http://localhost:${PORT}`);

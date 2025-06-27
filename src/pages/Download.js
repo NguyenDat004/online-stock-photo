@@ -52,7 +52,7 @@ function Download() {
       // Hiển thị thông báo thành công
       toast.success(` Đã tải "${filename}" thành công!`, {
         position: "top-center",
-        autoClose: 3000,
+        autoClose: 2000,
       });
     } catch (err) {
       console.error("❌ Lỗi khi tải ảnh:", err);

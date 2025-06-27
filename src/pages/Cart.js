@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { auth } from '../firebase';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { auth } from "../firebase";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -14,17 +14,20 @@ function Cart() {
         if (!user) return;
 
         const token = await user.getIdToken();
-        const res = await axios.get(`http://localhost:5000/api/cart/${user.uid}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          `http://localhost:5000/api/cart/${user.uid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         setCartItems(res.data);
         const total = res.data.reduce((sum, item) => sum + item.price, 0);
         setTotal(total);
       } catch (err) {
-        console.error('❌ Lỗi khi lấy giỏ hàng:', err);
+        console.error("❌ Lỗi khi lấy giỏ hàng:", err);
       }
     };
 
@@ -36,16 +39,22 @@ function Cart() {
       const user = auth.currentUser;
       const token = await user.getIdToken();
 
-      await axios.delete(`http://localhost:5000/api/cart/${user.uid}/${photoId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(
+        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      setCartItems(cartItems.filter(item => item.photo_id !== photoId));
-      setTotal(prev => prev - cartItems.find(item => item.photo_id === photoId).price);
+      setCartItems(cartItems.filter((item) => item.photo_id !== photoId));
+      setTotal(
+        (prev) =>
+          prev - cartItems.find((item) => item.photo_id === photoId).price
+      );
     } catch (err) {
-      console.error('❌ Lỗi khi xoá ảnh khỏi giỏ:', err);
+      console.error("❌ Lỗi khi xoá ảnh khỏi giỏ:", err);
     }
   };
 
@@ -66,25 +75,41 @@ function Cart() {
               </tr>
             </thead>
             <tbody>
-              {cartItems.map(item => (
+              {cartItems.map((item) => (
                 <tr key={item.photo_id}>
                   <td>
-                    <img src={item.image_url} alt={item.title} width="100" className="rounded" />
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      width="150"
+                      height="150"
+                      className="rounded object-cover border border-radius-3"
+                    />
                   </td>
                   <td>{item.title}</td>
                   <td>{Number(item.price).toLocaleString()} VNĐ</td>
                   <td className="text-center">
-                    <button className="btn btn-danger btn-sm" onClick={() => handleRemove(item.photo_id)}>
-                    🗑️Xoá
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleRemove(item.photo_id)}
+                    >
+                      🗑️Xoá
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <h4 className="text-end">Tổng cộng: {Number(total).toLocaleString()} VNĐ</h4>
+          <h4 className="text-end">
+            Tổng cộng:{" "}
+            <strong className="text-danger">
+              {Number(total).toLocaleString()} VNĐ
+            </strong>
+          </h4>
           <div className="text-end">
-            <a href="/checkout" className="btn btn-success mt-3">Thanh toán</a>
+            <a href="/checkout" className="btn btn-success mt-3">
+              Thanh toán
+            </a>
           </div>
         </div>
       )}
