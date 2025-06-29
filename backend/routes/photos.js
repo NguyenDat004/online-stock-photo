@@ -19,7 +19,7 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-// GET admin: tất cả ảnh kèm tên danh mục
+// GET /admin – tất cả ảnh kèm tên danh mục
 router.get("/admin", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -44,7 +44,7 @@ router.get("/admin", async (req, res) => {
   }
 });
 
-// GET homepage: ảnh "Đã duyệt"
+// GET / – ảnh "Đã duyệt"
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(`
@@ -61,7 +61,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET by ID
+// GET /:id – lấy ảnh theo id
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -85,37 +85,54 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST /upload (với resize + watermark)
+// POST /upload – xử lý resize, watermark, upload
 router.post("/upload", upload.single("image"), async (req, res) => {
   try {
-    const imageBuffer = req.file.buffer;
-    const original = await Jimp.read(imageBuffer);
+    if (!req.file) {
+      return res.status(400).json({ error: "Không có ảnh được upload" });
+    }
 
-    // Resize nếu lớn hơn 1280px
+    const imagePath = req.file.path;
+    const original = await Jimp.read(imagePath);
+
+    // Resize nếu cần
     if (original.getWidth() > 1280) {
       original.resize(1280, Jimp.AUTO);
     }
 
-    // Giảm chất lượng (giá trị từ 0 → 100, càng thấp càng nhẹ)
-    original.quality(70); // xuống 70 để nén mạnh hơn
+    original.quality(70);
 
-    // Thêm watermark như cũ
-    const watermark = await Jimp.read("watermark.png");
-    watermark.resize(original.getWidth() / 4, Jimp.AUTO);
-    const x = original.getWidth() - watermark.getWidth() - 10;
-    const y = original.getHeight() - watermark.getHeight() - 10;
-    original.composite(watermark, x, y, {
-      mode: Jimp.BLEND_SOURCE_OVER,
-      opacitySource: 0.6,
-    });
+    // Kiểm tra watermark có tồn tại không
+    const watermarkPath = path.join(__dirname, "../assets/watermark.png");
 
-    // Chuyển sang buffer JPEG (giảm size hơn PNG)
+    if (fs.existsSync(watermarkPath)) {
+      try {
+        const watermark = await Jimp.read(watermarkPath);
+        watermark.resize(original.getWidth() / 4, Jimp.AUTO);
+
+        const x = original.getWidth() - watermark.getWidth() - 10;
+        const y = original.getHeight() - watermark.getHeight() - 10;
+
+        original.composite(watermark, x, y, {
+          mode: Jimp.BLEND_SOURCE_OVER,
+          opacitySource: 0.6,
+        });
+
+        console.log("✅ Đã thêm watermark thành công");
+      } catch (watermarkError) {
+        console.warn("⚠️ Lỗi khi thêm watermark:", watermarkError.message);
+        console.log("📤 Tiếp tục upload không có watermark");
+      }
+    } else {
+      console.warn("⚠️ Không tìm thấy file watermark.png tại:", watermarkPath);
+      console.log("📤 Tiếp tục upload không có watermark");
+    }
+
     const processedBuffer = await original.getBufferAsync(Jimp.MIME_JPEG);
 
-    // ✅ Upload lên Cloudinary
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "your_folder_name" }, // tùy chọn
+        { folder: "photo_stock" },
         (err, result) => {
           if (err) return reject(err);
           resolve(result);
@@ -123,21 +140,27 @@ router.post("/upload", upload.single("image"), async (req, res) => {
       );
       stream.end(processedBuffer);
     });
+
+    fs.unlinkSync(imagePath); // xóa file gốc
+
     res.status(200).json({ message: "Upload thành công", data: result });
   } catch (err) {
     console.error("❌ Lỗi khi xử lý ảnh upload:", err);
+
+    // Xóa file tạm nếu có lỗi
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
     res.status(500).json({ error: err.message || "Lỗi khi upload ảnh" });
   }
 });
-
-// PUT /approve
+// PUT /:id/approve – duyệt ảnh
 router.put("/:id/approve", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      `
-      UPDATE photos SET status = 'Đã duyệt' WHERE id = $1 RETURNING *
-    `,
+      `UPDATE photos SET status = 'Đã duyệt' WHERE id = $1 RETURNING *`,
       [id]
     );
     if (result.rows.length === 0)
@@ -149,15 +172,13 @@ router.put("/:id/approve", async (req, res) => {
   }
 });
 
-// PUT /:id – cập nhật
+// PUT /:id – cập nhật title/category
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { title, category_id } = req.body;
   try {
     const result = await pool.query(
-      `
-      UPDATE photos SET title = $1, category_id = $2 WHERE id = $3 RETURNING *
-    `,
+      `UPDATE photos SET title = $1, category_id = $2 WHERE id = $3 RETURNING *`,
       [title, category_id, id]
     );
     if (result.rows.length === 0)
@@ -171,7 +192,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE /:id
+// DELETE /:id – xóa ảnh
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
