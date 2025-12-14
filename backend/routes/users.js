@@ -88,7 +88,7 @@ router.delete("/:id", async (req, res) => {
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
-const { updateAvatar } = require("../controllers/userController");
+const { updateAvatar } = require("../controllers/usercontroller");
 
 // Middleware để xử lý upload avatar
 router.put("/:uid/avatar", upload.single("avatar"), updateAvatar);
