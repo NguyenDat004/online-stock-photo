@@ -23,12 +23,11 @@ function WithdrawRequest() {
         const token = await user.getIdToken();
 
         const res = await axios.get(
-          "http://localhost:5000/api/wallet/balance",
+          "https://online-stock-photo.onrender.com/api/wallet/balance",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         setBalance(Number(res.data.balance));
-
       } catch (err) {
         console.error(err);
       } finally {
@@ -59,18 +58,17 @@ function WithdrawRequest() {
       const token = await user.getIdToken();
 
       await axios.post(
-        "http://localhost:5000/api/withdraw/request",
+        "https://online-stock-photo.onrender.com/api/withdraw/request",
         {
           amount: Number(amount),
           bank_name: bankName,
-          bank_account: bankAccount
+          bank_account: bankAccount,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success("Gửi yêu cầu rút tiền thành công!");
       navigate("/wallet");
-
     } catch (err) {
       console.error(err);
       toast.error("Lỗi khi gửi yêu cầu rút!");

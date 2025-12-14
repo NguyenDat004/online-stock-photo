@@ -12,7 +12,7 @@ function PhotoCard({ photo }) {
     isPurchased: false,
     isInCart: false,
     canAddToCart: true,
-    loading: true
+    loading: true,
   });
 
   // Kiểm tra trạng thái ảnh khi component mount
@@ -28,11 +28,11 @@ function PhotoCard({ photo }) {
     };
 
     // Đăng ký lắng nghe event
-    window.addEventListener('purchaseCompleted', handlePurchaseCompleted);
+    window.addEventListener("purchaseCompleted", handlePurchaseCompleted);
 
     // Cleanup khi component unmount
     return () => {
-      window.removeEventListener('purchaseCompleted', handlePurchaseCompleted);
+      window.removeEventListener("purchaseCompleted", handlePurchaseCompleted);
     };
   }, [photo.id]);
 
@@ -44,11 +44,11 @@ function PhotoCard({ photo }) {
     };
 
     // Đăng ký lắng nghe event
-    window.addEventListener('purchaseCompleted', handlePurchaseCompleted);
+    window.addEventListener("purchaseCompleted", handlePurchaseCompleted);
 
     // Cleanup khi component unmount
     return () => {
-      window.removeEventListener('purchaseCompleted', handlePurchaseCompleted);
+      window.removeEventListener("purchaseCompleted", handlePurchaseCompleted);
     };
   }, [photo.id]);
 
@@ -60,15 +60,15 @@ function PhotoCard({ photo }) {
           isPurchased: false,
           isInCart: false,
           canAddToCart: true,
-          loading: false
+          loading: false,
         });
         return;
       }
 
       const token = await user.getIdToken();
-      
+
       const response = await axios.get(
-        `http://localhost:5000/api/photos/check-status/${photo.id}/${user.uid}`,
+        `https://online-stock-photo.onrender.com/api/photos/check-status/${photo.id}/${user.uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ function PhotoCard({ photo }) {
 
       setPhotoStatus({
         ...response.data,
-        loading: false
+        loading: false,
       });
     } catch (err) {
       console.error("❌ Lỗi khi kiểm tra trạng thái ảnh:", err);
@@ -88,7 +88,7 @@ function PhotoCard({ photo }) {
         isPurchased: false,
         isInCart: false,
         canAddToCart: true,
-        loading: false
+        loading: false,
       });
     }
   };
@@ -114,7 +114,7 @@ function PhotoCard({ photo }) {
       const token = await user.getIdToken();
 
       await axios.post(
-        "http://localhost:5000/api/cart/add",
+        "https://online-stock-photo.onrender.com/api/cart/add",
         {
           userId: user.uid,
           photoId: photo.id,
@@ -133,12 +133,11 @@ function PhotoCard({ photo }) {
       });
 
       // Cập nhật trạng thái ngay lập tức
-      setPhotoStatus(prev => ({
+      setPhotoStatus((prev) => ({
         ...prev,
         isInCart: true,
-        canAddToCart: false
+        canAddToCart: false,
       }));
-
     } catch (err) {
       console.error("❌ Lỗi khi thêm vào giỏ hàng:", err);
 
@@ -150,20 +149,20 @@ function PhotoCard({ photo }) {
             position: "top-right",
             autoClose: 2000,
           });
-          setPhotoStatus(prev => ({
+          setPhotoStatus((prev) => ({
             ...prev,
             isPurchased: true,
-            canAddToCart: false
+            canAddToCart: false,
           }));
         } else if (errorMsg.includes("đã có trong giỏ hàng")) {
           toast.warning("⚠️ Ảnh này đã có trong giỏ hàng!", {
             position: "top-right",
             autoClose: 2000,
           });
-          setPhotoStatus(prev => ({
+          setPhotoStatus((prev) => ({
             ...prev,
             isInCart: true,
-            canAddToCart: false
+            canAddToCart: false,
           }));
         } else {
           toast.error("❌ Không thể thêm vào giỏ hàng!", {
@@ -186,30 +185,30 @@ function PhotoCard({ photo }) {
       return {
         text: <Spinner animation="border" size="sm" />,
         disabled: true,
-        variant: "secondary"
+        variant: "secondary",
       };
     }
-    
+
     if (photoStatus.isPurchased) {
       return {
         text: "✓ Đã sở hữu",
         disabled: true,
-        variant: "success"
+        variant: "success",
       };
     }
-    
+
     if (photoStatus.isInCart) {
       return {
         text: "✓ Trong giỏ",
         disabled: true,
-        variant: "secondary"
+        variant: "secondary",
       };
     }
-    
+
     return {
       text: "🛒 Thêm",
       disabled: false,
-      variant: "primary"
+      variant: "primary",
     };
   };
 
@@ -226,10 +225,10 @@ function PhotoCard({ photo }) {
           className="photo-card-img"
         />
         {photoStatus.isPurchased && (
-          <Badge 
-            bg="success" 
+          <Badge
+            bg="success"
             className="position-absolute top-0 end-0 m-2"
-            style={{ fontSize: '0.75rem' }}
+            style={{ fontSize: "0.75rem" }}
           >
             ✓ Đã mua
           </Badge>
@@ -267,10 +266,10 @@ function PhotoCard({ photo }) {
             onClick={handleAddToCart}
             disabled={buttonConfig.disabled}
             className="d-flex align-items-center gap-1"
-            style={{ 
+            style={{
               whiteSpace: "nowrap",
               opacity: buttonConfig.disabled ? 0.6 : 1,
-              cursor: buttonConfig.disabled ? "not-allowed" : "pointer"
+              cursor: buttonConfig.disabled ? "not-allowed" : "pointer",
             }}
           >
             {buttonConfig.text}

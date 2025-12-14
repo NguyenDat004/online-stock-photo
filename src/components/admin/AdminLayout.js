@@ -11,7 +11,9 @@ const AdminLayout = () => {
   useEffect(() => {
     const loadPending = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/withdraw/admin/list");
+        const res = await axios.get(
+          "https://online-stock-photo.onrender.com/api/withdraw/admin/list"
+        );
         const count = res.data.filter((x) => x.status === "pending").length;
         setPendingCount(count);
       } catch (err) {
@@ -31,7 +33,6 @@ const AdminLayout = () => {
         </div>
 
         <nav className="sidebar-nav">
-
           <NavLink to="/admin" end className="sidebar-link">
             Dashboard
           </NavLink>
@@ -58,7 +59,6 @@ const AdminLayout = () => {
           <NavLink to="/admin/transactions" className="sidebar-link">
             Giao dịch
           </NavLink>
-
         </nav>
       </aside>
 

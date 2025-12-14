@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { auth } from '../firebase';
-import { Container, Table, Spinner, Button } from 'react-bootstrap';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { auth } from "../firebase";
+import { Container, Table, Spinner, Button } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function Orders() {
   const navigate = useNavigate();
@@ -14,14 +14,14 @@ function Orders() {
     try {
       const user = auth.currentUser;
       if (!user) {
-        toast.warning('⚠️ Vui lòng đăng nhập!');
-        navigate('/login');
+        toast.warning("⚠️ Vui lòng đăng nhập!");
+        navigate("/login");
         return;
       }
 
       const token = await user.getIdToken();
       const response = await axios.get(
-        `http://localhost:5000/api/transactions/history/${user.uid}`,
+        `https://online-stock-photo.onrender.com/api/transactions/history/${user.uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,8 +32,8 @@ function Orders() {
       setOrders(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('❌ Error fetching orders:', error.message);
-      toast.error('❌ Lỗi khi lấy danh sách đơn hàng!');
+      console.error("❌ Error fetching orders:", error.message);
+      toast.error("❌ Lỗi khi lấy danh sách đơn hàng!");
       setLoading(false);
     }
   }, [navigate]);
@@ -80,7 +80,9 @@ function Orders() {
                 <td>
                   <Button
                     variant="primary"
-                    onClick={() => navigate(`/order-detail/${order.transaction_id}`)}
+                    onClick={() =>
+                      navigate(`/order-detail/${order.transaction_id}`)
+                    }
                   >
                     Xem chi tiết
                   </Button>

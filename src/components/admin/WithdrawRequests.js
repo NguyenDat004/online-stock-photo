@@ -7,7 +7,9 @@ function WithdrawRequests() {
   const [requests, setRequests] = useState([]);
 
   const loadData = async () => {
-    const res = await axios.get("http://localhost:5000/api/withdraw/admin/list");
+    const res = await axios.get(
+      "https://online-stock-photo.onrender.com/api/withdraw/admin/list"
+    );
     setRequests(res.data);
   };
 
@@ -17,7 +19,7 @@ function WithdrawRequests() {
 
   const updateStatus = async (id, status) => {
     const res = await axios.put(
-      `http://localhost:5000/api/withdraw/admin/update/${id}`,
+      `https://online-stock-photo.onrender.com/api/withdraw/admin/update/${id}`,
       { status }
     );
     toast.success(`Yêu cầu đã được ${status}`);
@@ -55,15 +57,20 @@ function WithdrawRequests() {
           {requests.map((item) => (
             <tr key={item.request_id}>
               <td>{item.request_id}</td>
-              <td>{item.user_name} ({item.email})</td>
+              <td>
+                {item.user_name} ({item.email})
+              </td>
               <td>{Number(item.amount).toLocaleString("vi-VN")} VNĐ</td>
               <td>{item.bank_name}</td>
               <td>{item.bank_account}</td>
               <td>
-                <Badge 
+                <Badge
                   bg={
-                    item.status === "pending" ? "warning" :
-                    item.status === "approved" ? "success" : "danger"
+                    item.status === "pending"
+                      ? "warning"
+                      : item.status === "approved"
+                      ? "success"
+                      : "danger"
                   }
                 >
                   {item.status}
@@ -73,16 +80,16 @@ function WithdrawRequests() {
               <td>
                 {item.status === "pending" ? (
                   <>
-                    <Button 
-                      size="sm" 
-                      variant="success" 
+                    <Button
+                      size="sm"
+                      variant="success"
                       onClick={() => updateStatus(item.request_id, "approved")}
                     >
                       Duyệt
                     </Button>{" "}
-                    <Button 
-                      size="sm" 
-                      variant="danger" 
+                    <Button
+                      size="sm"
+                      variant="danger"
                       onClick={() => updateStatus(item.request_id, "rejected")}
                     >
                       Từ chối

@@ -9,7 +9,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👁️ icon mắt
 import { signInWithPopup } from "firebase/auth";
 import { googleProvider } from "../firebase";
 
-
 function Register() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -57,11 +56,14 @@ function Register() {
       await updateProfile(user, { displayName: fullName });
       const token = await user.getIdToken();
 
-      await axios.post("http://localhost:5000/api/auth/register", {
-        token,
-        fullName,
-        email,
-      });
+      await axios.post(
+        "https://online-stock-photo.onrender.com/api/auth/register",
+        {
+          token,
+          fullName,
+          email,
+        }
+      );
 
       toast.success("🎉 Đăng ký thành công!", {
         position: "top-right",
@@ -85,13 +87,16 @@ function Register() {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const token = await user.getIdToken();
-  
-      await axios.post("http://localhost:5000/api/auth/google", {
-        token,
-        fullName: user.displayName,
-        email: user.email,
-      });
-  
+
+      await axios.post(
+        "https://online-stock-photo.onrender.com/api/auth/google",
+        {
+          token,
+          fullName: user.displayName,
+          email: user.email,
+        }
+      );
+
       toast.success("Đăng ký bằng Google thành công!", {
         autoClose: 1000,
         onClose: () => navigate("/login"),
@@ -101,7 +106,6 @@ function Register() {
       toast.error("Không thể đăng ký bằng Google");
     }
   };
-  
 
   return (
     <div className="container mt-5 mb-5">

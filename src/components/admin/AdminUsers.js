@@ -23,7 +23,9 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/users");
+      const res = await fetch(
+        "https://online-stock-photo.onrender.com/api/users"
+      );
       if (!res.ok) throw new Error("Không thể tải danh sách người dùng");
       const data = await res.json();
       setUsers(data);
@@ -64,11 +66,14 @@ const AdminUsers = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${currentUser.uid}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ full_name: formData.full_name })
-      });
+      const res = await fetch(
+        `https://online-stock-photo.onrender.com/api/users/${currentUser.uid}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ full_name: formData.full_name }),
+        }
+      );
 
       if (!res.ok) throw new Error("Cập nhật thất bại");
 
@@ -77,10 +82,10 @@ const AdminUsers = () => {
         avatarData.append("avatar", avatarFile);
 
         const avatarRes = await fetch(
-          `http://localhost:5000/api/users/${currentUser.uid}/avatar`,
+          `https://online-stock-photo.onrender.com/api/users/${currentUser.uid}/avatar`,
           {
             method: "PUT",
-            body: avatarData
+            body: avatarData,
           }
         );
 
@@ -99,9 +104,12 @@ const AdminUsers = () => {
     if (!window.confirm("Bạn có chắc muốn xóa người dùng này?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${uid}`, {
-        method: "DELETE"
-      });
+      const res = await fetch(
+        `https://online-stock-photo.onrender.com/api/users/${uid}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!res.ok) throw new Error("Xóa thất bại");
 
@@ -132,21 +140,36 @@ const AdminUsers = () => {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
       if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, '...', totalPages);
+        pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
-    
+
     return pages;
   };
 
@@ -183,15 +206,16 @@ const AdminUsers = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
           <span className="text-muted">
-            Hiển thị {startIndex + 1} - {Math.min(endIndex, users.length)} trong tổng số {users.length} người dùng
+            Hiển thị {startIndex + 1} - {Math.min(endIndex, users.length)} trong
+            tổng số {users.length} người dùng
           </span>
         </div>
-        
+
         <div className="d-flex align-items-center gap-2">
           <label className="mb-0 me-2">Hiển thị:</label>
-          <select 
-            className="form-select form-select-sm" 
-            style={{ width: 'auto' }}
+          <select
+            className="form-select form-select-sm"
+            style={{ width: "auto" }}
             value={itemsPerPage}
             onChange={handleItemsPerPageChange}
           >
@@ -267,9 +291,11 @@ const AdminUsers = () => {
         <div className="d-flex justify-content-center align-items-center mt-4">
           <nav>
             <ul className="pagination mb-0">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
@@ -278,23 +304,32 @@ const AdminUsers = () => {
               </li>
 
               {getPageNumbers().map((page, index) => (
-                <li 
-                  key={index} 
-                  className={`page-item ${page === currentPage ? 'active' : ''} ${page === '...' ? 'disabled' : ''}`}
+                <li
+                  key={index}
+                  className={`page-item ${
+                    page === currentPage ? "active" : ""
+                  } ${page === "..." ? "disabled" : ""}`}
                 >
-                  {page === '...' ? (
+                  {page === "..." ? (
                     <span className="page-link">...</span>
                   ) : (
-                    <button className="page-link" onClick={() => goToPage(page)}>
+                    <button
+                      className="page-link"
+                      onClick={() => goToPage(page)}
+                    >
                       {page}
                     </button>
                   )}
                 </li>
               ))}
 
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >

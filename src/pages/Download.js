@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 function Download() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8); // Số ảnh mỗi trang
@@ -21,7 +21,7 @@ function Download() {
         const token = await user.getIdToken();
 
         const res = await axios.get(
-          `http://localhost:5000/api/downloads/${user.uid}`,
+          `https://online-stock-photo.onrender.com/api/downloads/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ function Download() {
       const token = await auth.currentUser.getIdToken();
 
       const res = await axios.get(
-        `http://localhost:5000/api/photos/${photoId}/download`,
+        `https://online-stock-photo.onrender.com/api/photos/${photoId}/download`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -86,7 +86,7 @@ function Download() {
   // Chuyển trang
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Tạo danh sách số trang hiển thị
@@ -103,17 +103,18 @@ function Download() {
       // Hiển thị có dấu ...
       if (currentPage <= 3) {
         for (let i = 1; i <= 4; i++) pageNumbers.push(i);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pageNumbers.push(1);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         for (let i = totalPages - 3; i <= totalPages; i++) pageNumbers.push(i);
       } else {
         pageNumbers.push(1);
-        pageNumbers.push('...');
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) pageNumbers.push(i);
-        pageNumbers.push('...');
+        pageNumbers.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++)
+          pageNumbers.push(i);
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       }
     }
@@ -139,9 +140,7 @@ function Download() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">📦 Ảnh bạn đã mua</h2>
         {photos.length > 0 && (
-          <span className="badge bg-primary fs-6">
-            {photos.length} ảnh
-          </span>
+          <span className="badge bg-primary fs-6">{photos.length} ảnh</span>
         )}
       </div>
 
@@ -193,7 +192,9 @@ function Download() {
             <nav aria-label="Page navigation" className="mt-4">
               <ul className="pagination justify-content-center">
                 {/* Nút Previous */}
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <li
+                  className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+                >
                   <button
                     className="page-link"
                     onClick={() => paginate(currentPage - 1)}
@@ -208,10 +209,10 @@ function Download() {
                   <li
                     key={index}
                     className={`page-item ${
-                      number === currentPage ? 'active' : ''
-                    } ${number === '...' ? 'disabled' : ''}`}
+                      number === currentPage ? "active" : ""
+                    } ${number === "..." ? "disabled" : ""}`}
                   >
-                    {number === '...' ? (
+                    {number === "..." ? (
                       <span className="page-link">...</span>
                     ) : (
                       <button
@@ -225,7 +226,11 @@ function Download() {
                 ))}
 
                 {/* Nút Next */}
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "disabled" : ""
+                  }`}
+                >
                   <button
                     className="page-link"
                     onClick={() => paginate(currentPage + 1)}
@@ -238,8 +243,10 @@ function Download() {
 
               {/* Thông tin trang */}
               <div className="text-center text-muted mt-2">
-                Trang {currentPage} / {totalPages} (Hiển thị {indexOfFirstItem + 1}-
-                {Math.min(indexOfLastItem, photos.length)} trong tổng số {photos.length} ảnh)
+                Trang {currentPage} / {totalPages} (Hiển thị{" "}
+                {indexOfFirstItem + 1}-
+                {Math.min(indexOfLastItem, photos.length)} trong tổng số{" "}
+                {photos.length} ảnh)
               </div>
             </nav>
           )}

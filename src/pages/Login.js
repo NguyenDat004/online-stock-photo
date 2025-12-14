@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -23,7 +27,10 @@ function Login() {
       const user = result.user;
       const token = await user.getIdToken();
 
-      await axios.post("http://localhost:5000/api/auth/google", { token });
+      await axios.post(
+        "https://online-stock-photo.onrender.com/api/auth/google",
+        { token }
+      );
 
       toast.success("Đăng nhập Google thành công!", {
         autoClose: 800,
@@ -60,11 +67,18 @@ function Login() {
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
       const token = await user.getIdToken();
 
-      await axios.post("http://localhost:5000/api/auth/login", { token });
+      await axios.post(
+        "https://online-stock-photo.onrender.com/api/auth/login",
+        { token }
+      );
 
       toast.success("Đăng nhập thành công!", {
         autoClose: 500,
@@ -78,9 +92,11 @@ function Login() {
   return (
     <div className="container mt-5 mb-5">
       <h2 className="text-center mb-4">Đăng nhập</h2>
-      <div className="bg-white shadow-lg rounded p-4 mx-auto" style={{ maxWidth: "400px" }}>
+      <div
+        className="bg-white shadow-lg rounded p-4 mx-auto"
+        style={{ maxWidth: "400px" }}
+      >
         <form onSubmit={handleSubmit}>
-
           {/* Email */}
           <div className="mb-3">
             <label className="form-label">Email:</label>

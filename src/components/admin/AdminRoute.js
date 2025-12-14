@@ -1,8 +1,8 @@
 // src/components/AdminRoute.js
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import axios from 'axios';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function AdminRoute({ children }) {
   const [loading, setLoading] = useState(true);
@@ -13,10 +13,12 @@ function AdminRoute({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          const res = await axios.get(`http://localhost:5000/api/users/${user.email}`);
-          setIsAdmin(res.data.role === 'admin');
+          const res = await axios.get(
+            `https://online-stock-photo.onrender.com/api/users/${user.email}`
+          );
+          setIsAdmin(res.data.role === "admin");
         } catch (err) {
-          console.error('Lỗi khi kiểm tra role:', err);
+          console.error("Lỗi khi kiểm tra role:", err);
         }
       }
       setLoading(false);
@@ -25,7 +27,10 @@ function AdminRoute({ children }) {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div className="text-center mt-5">🔐 Đang kiểm tra quyền truy cập...</div>;
+  if (loading)
+    return (
+      <div className="text-center mt-5">🔐 Đang kiểm tra quyền truy cập...</div>
+    );
 
   return isAdmin ? children : <Navigate to="/" />;
 }

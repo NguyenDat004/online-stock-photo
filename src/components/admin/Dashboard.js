@@ -27,7 +27,9 @@ const Dashboard = () => {
       setLoading(true);
       console.log("📊 Fetching dashboard stats...");
 
-      const response = await fetch("http://localhost:5000/api/admin/dashboard");
+      const response = await fetch(
+        "https://online-stock-photo.onrender.com/api/admin/dashboard"
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -247,7 +249,11 @@ const Dashboard = () => {
               <h5 className="mb-3">📊 Doanh thu tháng này</h5>
               <div className="d-flex justify-content-between mb-2">
                 <span>Doanh thu:</span>
-                <strong>{formatCurrency(revenueComparison?.currentMonth?.revenue || 0)}</strong>
+                <strong>
+                  {formatCurrency(
+                    revenueComparison?.currentMonth?.revenue || 0
+                  )}
+                </strong>
               </div>
               <div className="d-flex justify-content-between">
                 <span>Đơn hàng:</span>
@@ -263,7 +269,11 @@ const Dashboard = () => {
               <h5 className="mb-3">📊 Doanh thu tháng trước</h5>
               <div className="d-flex justify-content-between mb-2">
                 <span>Doanh thu:</span>
-                <strong>{formatCurrency(revenueComparison?.previousMonth?.revenue || 0)}</strong>
+                <strong>
+                  {formatCurrency(
+                    revenueComparison?.previousMonth?.revenue || 0
+                  )}
+                </strong>
               </div>
               <div className="d-flex justify-content-between">
                 <span>Đơn hàng:</span>
@@ -468,7 +478,7 @@ const Dashboard = () => {
       </div>
 
       {/* ======== GIAO DỊCH GẦN ĐÂY & NGƯỜI DÙNG MỚI ======== */}
-      
+
       {/* ======== GIAO DỊCH GÀN ĐÂY ======== */}
       <div className="card shadow-sm border-0 p-3 mb-4">
         <h4 className="mb-3">🕒 10 giao dịch gần nhất</h4>

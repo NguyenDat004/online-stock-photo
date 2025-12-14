@@ -15,19 +15,21 @@ function PhotoDetail() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
-  
+
   // ✅ THÊM: State kiểm tra trạng thái ảnh
   const [photoStatus, setPhotoStatus] = useState({
     isPurchased: false,
     isInCart: false,
     canAddToCart: true,
-    loading: true
+    loading: true,
   });
 
   useEffect(() => {
     const fetchPhoto = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/photos/${id}`);
+        const res = await axios.get(
+          `https://online-stock-photo.onrender.com/api/photos/${id}`
+        );
         setPhoto(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu ảnh:", error);
@@ -38,7 +40,9 @@ function PhotoDetail() {
 
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/reviews/${id}`);
+        const res = await axios.get(
+          `https://online-stock-photo.onrender.com/api/reviews/${id}`
+        );
         setReviews(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy review:", error);
@@ -51,10 +55,10 @@ function PhotoDetail() {
       if (currentUser) {
         try {
           const res = await axios.get(
-            `http://localhost:5000/api/users/${currentUser.email}`
+            `https://online-stock-photo.onrender.com/api/users/${currentUser.email}`
           );
           setUserData(res.data);
-          
+
           // ✅ THÊM: Kiểm tra trạng thái ảnh khi user đăng nhập
           checkPhotoStatus(currentUser);
         } catch (err) {
@@ -69,7 +73,7 @@ function PhotoDetail() {
           isPurchased: false,
           isInCart: false,
           canAddToCart: true,
-          loading: false
+          loading: false,
         });
       }
     });
@@ -88,14 +92,14 @@ function PhotoDetail() {
           isPurchased: false,
           isInCart: false,
           canAddToCart: true,
-          loading: false
+          loading: false,
         });
         return;
       }
 
       const token = await currentUser.getIdToken();
       const response = await axios.get(
-        `http://localhost:5000/api/photos/check-status/${id}/${currentUser.uid}`,
+        `https://online-stock-photo.onrender.com/api/photos/check-status/${id}/${currentUser.uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +110,7 @@ function PhotoDetail() {
       console.log(`✅ Photo ${id} status:`, response.data);
       setPhotoStatus({
         ...response.data,
-        loading: false
+        loading: false,
       });
     } catch (err) {
       console.error("❌ Lỗi khi kiểm tra trạng thái ảnh:", err);
@@ -114,7 +118,7 @@ function PhotoDetail() {
         isPurchased: false,
         isInCart: false,
         canAddToCart: true,
-        loading: false
+        loading: false,
       });
     }
   };
@@ -133,7 +137,7 @@ function PhotoDetail() {
       const userId = auth.currentUser.uid;
 
       await axios.post(
-        "http://localhost:5000/api/cart/add",
+        "https://online-stock-photo.onrender.com/api/cart/add",
         {
           userId,
           photoId: photo.id,
@@ -152,15 +156,14 @@ function PhotoDetail() {
       });
 
       // ✅ THÊM: Cập nhật trạng thái sau khi thêm thành công
-      setPhotoStatus(prev => ({
+      setPhotoStatus((prev) => ({
         ...prev,
         isInCart: true,
-        canAddToCart: false
+        canAddToCart: false,
       }));
-
     } catch (err) {
       console.error("Lỗi khi thêm ảnh vào giỏ:", err);
-      
+
       if (err.response?.status === 400) {
         const errorMsg = err.response?.data?.message || "";
 
@@ -169,20 +172,20 @@ function PhotoDetail() {
             position: "top-right",
             autoClose: 2000,
           });
-          setPhotoStatus(prev => ({
+          setPhotoStatus((prev) => ({
             ...prev,
             isPurchased: true,
-            canAddToCart: false
+            canAddToCart: false,
           }));
         } else if (errorMsg.includes("đã có trong giỏ hàng")) {
           toast.warning("⚠️ Ảnh này đã có trong giỏ hàng!", {
             position: "top-right",
             autoClose: 2000,
           });
-          setPhotoStatus(prev => ({
+          setPhotoStatus((prev) => ({
             ...prev,
             isInCart: true,
-            canAddToCart: false
+            canAddToCart: false,
           }));
         } else {
           toast.error("❌ Không thể thêm vào giỏ hàng!", {
@@ -222,7 +225,7 @@ function PhotoDetail() {
       const token = await auth.currentUser.getIdToken();
 
       const res = await axios.post(
-        "http://localhost:5000/api/reviews",
+        "https://online-stock-photo.onrender.com/api/reviews",
         {
           photo_id: id,
           user_id: user.uid,
@@ -252,11 +255,14 @@ function PhotoDetail() {
     try {
       const token = await auth.currentUser.getIdToken();
 
-      await axios.delete(`http://localhost:5000/api/reviews/${reviewId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(
+        `https://online-stock-photo.onrender.com/api/reviews/${reviewId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setReviews((prev) => prev.filter((r) => r.review_id !== reviewId));
     } catch (err) {
@@ -291,7 +297,11 @@ function PhotoDetail() {
     <div className="container py-5 photo-detail-container">
       <div className="row">
         <div className="col-md-6">
-          <div className={`photo-detail-image-wrapper ${imageLoading ? 'loading' : ''}`}>
+          <div
+            className={`photo-detail-image-wrapper ${
+              imageLoading ? "loading" : ""
+            }`}
+          >
             <img
               src={photo.image_url}
               alt={photo.title}
@@ -314,14 +324,13 @@ function PhotoDetail() {
             <strong>Người đăng:</strong> {photo.uploader || "Ẩn danh"}
           </p>
           <p>
-            <strong>Ngày đăng:</strong>{" "}
-            {formatDate(photo.created_at)}
+            <strong>Ngày đăng:</strong> {formatDate(photo.created_at)}
           </p>
           <p className="photo-detail-price">
             <strong>Giá:</strong> {Number(photo.price).toLocaleString()} VNĐ
           </p>
           <p>{photo.description}</p>
-          
+
           {/* ✅ THAY ĐỔI: Hiển thị nút dựa trên trạng thái */}
           {photoStatus.loading ? (
             <button
@@ -396,7 +405,7 @@ function PhotoDetail() {
               const isOwner = user && user.uid === review.user_id;
               const isAdmin = userData && userData.role === "admin";
               const canDelete = isOwner || isAdmin;
-              
+
               return (
                 <li key={review.review_id} className="list-group-item">
                   {canDelete && (

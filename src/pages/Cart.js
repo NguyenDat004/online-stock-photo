@@ -17,7 +17,7 @@ function Cart() {
 
         const token = await user.getIdToken();
         const res = await axios.get(
-          `http://localhost:5000/api/cart/${user.uid}`,
+          `https://online-stock-photo.onrender.com/api/cart/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ function Cart() {
       setSelectedItems([]);
     } else {
       // Chọn tất cả
-      setSelectedItems(cartItems.map(item => item.photo_id));
+      setSelectedItems(cartItems.map((item) => item.photo_id));
     }
   };
 
@@ -66,7 +66,7 @@ function Cart() {
       const token = await user.getIdToken();
 
       await axios.delete(
-        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+        `https://online-stock-photo.onrender.com/api/cart/${user.uid}/${photoId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -97,9 +97,9 @@ function Cart() {
 
       // Xóa từng item đã chọn
       await Promise.all(
-        selectedItems.map(photoId =>
+        selectedItems.map((photoId) =>
           axios.delete(
-            `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+            `https://online-stock-photo.onrender.com/api/cart/${user.uid}/${photoId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -114,7 +114,9 @@ function Cart() {
         autoClose: 2000,
       });
 
-      setCartItems(cartItems.filter((item) => !selectedItems.includes(item.photo_id)));
+      setCartItems(
+        cartItems.filter((item) => !selectedItems.includes(item.photo_id))
+      );
       setSelectedItems([]);
       setTotal(0);
     } catch (err) {
@@ -134,18 +136,18 @@ function Cart() {
       });
       return;
     }
-  
+
     try {
       const user = auth.currentUser;
       const token = await user.getIdToken();
-  
+
       console.log("🛒 Checkout with selected items:", selectedItems);
-  
+
       // Gọi API tạo URL thanh toán VNPay - GỬI selectedPhotoIds
       const res = await axios.post(
-        "http://localhost:5000/api/vnpay/create-payment",
+        "https://online-stock-photo.onrender.com/api/vnpay/create-payment",
         {
-          selectedPhotoIds: selectedItems // ✅ GỬI DANH SÁCH PHOTO_ID ĐÃ CHỌN
+          selectedPhotoIds: selectedItems, // ✅ GỬI DANH SÁCH PHOTO_ID ĐÃ CHỌN
         },
         {
           headers: {
@@ -153,7 +155,7 @@ function Cart() {
           },
         }
       );
-  
+
       if (res.data.paymentUrl) {
         console.log("✅ Redirecting to VNPay...");
         // Redirect sang VNPay để thanh toán thật
@@ -169,38 +171,48 @@ function Cart() {
       });
     }
   };
-  
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#f5f7fa",
-      padding: "40px 20px"
-    }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f5f7fa",
+        padding: "40px 20px",
+      }}
+    >
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-10">
-  
             {/* Header */}
             <div className="mb-4">
               <h2 className="fw-bold mb-2">🛒 Giỏ Hàng Của Bạn</h2>
-              <p className="text-muted">{cartItems.length} sản phẩm trong giỏ</p>
+              <p className="text-muted">
+                {cartItems.length} sản phẩm trong giỏ
+              </p>
             </div>
 
             {cartItems.length === 0 ? (
-              <div style={{
-                background: "white",
-                borderRadius: "12px",
-                padding: "60px 40px",
-                textAlign: "center",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                border: "1px solid #e2e8f0"
-              }}>
-                <div style={{
-                  fontSize: "4rem",
-                  marginBottom: "20px"
-                }}>🛍️</div>
-                <h3 className="mb-3" style={{ color: "#1a202c" }}>Giỏ hàng trống</h3>
+              <div
+                style={{
+                  background: "white",
+                  borderRadius: "12px",
+                  padding: "60px 40px",
+                  textAlign: "center",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "4rem",
+                    marginBottom: "20px",
+                  }}
+                >
+                  🛍️
+                </div>
+                <h3 className="mb-3" style={{ color: "#1a202c" }}>
+                  Giỏ hàng trống
+                </h3>
                 <p className="text-muted">Bạn chưa thêm ảnh nào vào giỏ hàng</p>
               </div>
             ) : (
@@ -209,7 +221,10 @@ function Cart() {
                 <div className="d-flex align-items-center mb-3 p-3 bg-light rounded">
                   <Form.Check
                     type="checkbox"
-                    checked={selectedItems.length === cartItems.length && cartItems.length > 0}
+                    checked={
+                      selectedItems.length === cartItems.length &&
+                      cartItems.length > 0
+                    }
                     onChange={handleSelectAll}
                     style={{ transform: "scale(1.2)" }}
                     label={
@@ -221,21 +236,26 @@ function Cart() {
                 </div>
 
                 {/* Cart Items */}
-                <div style={{
-                  background: "white",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                  border: "1px solid #e2e8f0",
-                  marginBottom: "24px"
-                }}>
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    border: "1px solid #e2e8f0",
+                    marginBottom: "24px",
+                  }}
+                >
                   {cartItems.map((item, index) => (
                     <div
                       key={item.photo_id}
                       style={{
                         padding: "24px",
-                        borderBottom: index < cartItems.length - 1 ? "1px solid #e2e8f0" : "none",
-                        transition: "background-color 0.2s ease"
+                        borderBottom:
+                          index < cartItems.length - 1
+                            ? "1px solid #e2e8f0"
+                            : "none",
+                        transition: "background-color 0.2s ease",
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = "#f7fafc";
@@ -256,7 +276,7 @@ function Cart() {
                               width: "20px",
                               height: "20px",
                               cursor: "pointer",
-                              accentColor: "#2d3748"
+                              accentColor: "#2d3748",
                             }}
                           />
                         </div>
@@ -271,21 +291,26 @@ function Cart() {
                               height: "100px",
                               objectFit: "cover",
                               borderRadius: "8px",
-                              border: "1px solid #e2e8f0"
+                              border: "1px solid #e2e8f0",
                             }}
                           />
                         </div>
 
                         {/* Info */}
                         <div className="col">
-                          <h5 className="mb-2 fw-semibold" style={{ color: "#1a202c" }}>
+                          <h5
+                            className="mb-2 fw-semibold"
+                            style={{ color: "#1a202c" }}
+                          >
                             {item.title}
                           </h5>
-                          <div style={{
-                            fontSize: "1.25rem",
-                            color: "#2d3748",
-                            fontWeight: "600"
-                          }}>
+                          <div
+                            style={{
+                              fontSize: "1.25rem",
+                              color: "#2d3748",
+                              fontWeight: "600",
+                            }}
+                          >
                             {Number(item.price).toLocaleString()} VNĐ
                           </div>
                         </div>
@@ -303,7 +328,7 @@ function Cart() {
                               fontSize: "0.9rem",
                               fontWeight: "500",
                               cursor: "pointer",
-                              transition: "all 0.2s ease"
+                              transition: "all 0.2s ease",
                             }}
                             onMouseEnter={(e) => {
                               e.target.style.background = "#fff5f5";
@@ -323,23 +348,31 @@ function Cart() {
                 </div>
 
                 {/* Checkout Section */}
-                <div style={{
-                  background: "white",
-                  borderRadius: "12px",
-                  padding: "24px",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                  border: "1px solid #e2e8f0"
-                }}>
+                <div
+                  style={{
+                    background: "white",
+                    borderRadius: "12px",
+                    padding: "24px",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
-                      <div className="text-muted mb-2" style={{ fontSize: "0.9rem" }}>
+                      <div
+                        className="text-muted mb-2"
+                        style={{ fontSize: "0.9rem" }}
+                      >
                         Tổng cộng ({selectedItems.length} sản phẩm)
                       </div>
-                      <h2 className="mb-0" style={{
-                        color: "#1a202c",
-                        fontWeight: "700",
-                        fontSize: "2rem"
-                      }}>
+                      <h2
+                        className="mb-0"
+                        style={{
+                          color: "#1a202c",
+                          fontWeight: "700",
+                          fontSize: "2rem",
+                        }}
+                      >
                         {Number(total).toLocaleString()} VNĐ
                       </h2>
                     </div>
@@ -350,15 +383,23 @@ function Cart() {
                         onClick={handleRemoveSelected}
                         disabled={selectedItems.length === 0}
                         style={{
-                          background: selectedItems.length === 0 ? "#cbd5e0" : "white",
-                          border: selectedItems.length === 0 ? "1px solid #cbd5e0" : "1px solid #e53e3e",
-                          color: selectedItems.length === 0 ? "#718096" : "#e53e3e",
+                          background:
+                            selectedItems.length === 0 ? "#cbd5e0" : "white",
+                          border:
+                            selectedItems.length === 0
+                              ? "1px solid #cbd5e0"
+                              : "1px solid #e53e3e",
+                          color:
+                            selectedItems.length === 0 ? "#718096" : "#e53e3e",
                           padding: "16px 40px",
                           borderRadius: "8px",
                           fontSize: "1rem",
                           fontWeight: "600",
-                          cursor: selectedItems.length === 0 ? "not-allowed" : "pointer",
-                          transition: "all 0.2s ease"
+                          cursor:
+                            selectedItems.length === 0
+                              ? "not-allowed"
+                              : "pointer",
+                          transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
                           if (selectedItems.length > 0) {
@@ -381,15 +422,19 @@ function Cart() {
                         onClick={handleCheckout}
                         disabled={selectedItems.length === 0}
                         style={{
-                          background: selectedItems.length === 0 ? "#cbd5e0" : "#2d3748",
+                          background:
+                            selectedItems.length === 0 ? "#cbd5e0" : "#2d3748",
                           border: "none",
                           color: "white",
                           padding: "16px 40px",
                           borderRadius: "8px",
                           fontSize: "1rem",
                           fontWeight: "600",
-                          cursor: selectedItems.length === 0 ? "not-allowed" : "pointer",
-                          transition: "all 0.2s ease"
+                          cursor:
+                            selectedItems.length === 0
+                              ? "not-allowed"
+                              : "pointer",
+                          transition: "all 0.2s ease",
                         }}
                         onMouseEnter={(e) => {
                           if (selectedItems.length > 0) {

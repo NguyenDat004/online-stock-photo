@@ -19,7 +19,9 @@ function Home() {
   const fetchPhotos = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/photos");
+      const res = await axios.get(
+        "https://online-stock-photo.onrender.com/api/photos"
+      );
       setPhotos(res.data);
     } catch (err) {
       console.error("❌ Lỗi khi tải ảnh:", err);
@@ -31,8 +33,10 @@ function Home() {
   // Hàm fetch categories từ database
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories");
-      setCategories(["Tất cả", ...res.data.map(cat => cat.name)]);
+      const res = await axios.get(
+        "https://online-stock-photo.onrender.com/api/categories"
+      );
+      setCategories(["Tất cả", ...res.data.map((cat) => cat.name)]);
     } catch (err) {
       console.error("❌ Lỗi khi tải danh mục:", err);
     }
@@ -102,7 +106,7 @@ function Home() {
       {/* Header với nút Tải lại */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>📸 Kho Ảnh Mới Nhất</h2>
-        <button 
+        <button
           className="btn btn-outline-primary"
           onClick={() => {
             fetchPhotos();
@@ -112,7 +116,11 @@ function Home() {
         >
           {loading ? (
             <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <span
+                className="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
               Đang tải...
             </>
           ) : (
@@ -176,7 +184,9 @@ function Home() {
           <nav>
             <ul className="pagination">
               {/* Nút Trước */}
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   className="page-link"
@@ -204,7 +214,11 @@ function Home() {
               ))}
 
               {/* Nút Sau */}
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   className="page-link"

@@ -33,7 +33,9 @@ const AdminTransactions = () => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/transactions/all");
+      const res = await fetch(
+        "https://online-stock-photo.onrender.com/api/transactions/all"
+      );
 
       if (!res.ok) throw new Error("Không thể tải danh sách đơn hàng");
 
@@ -52,10 +54,11 @@ const AdminTransactions = () => {
   const handleSearch = () => {
     const s = search.toLowerCase();
 
-    const result = transactions.filter((t) =>
-      t.transaction_id.toString().includes(s) ||
-      (t.user_id || "").toLowerCase().includes(s) ||
-      (t.full_name || "").toLowerCase().includes(s)
+    const result = transactions.filter(
+      (t) =>
+        t.transaction_id.toString().includes(s) ||
+        (t.user_id || "").toLowerCase().includes(s) ||
+        (t.full_name || "").toLowerCase().includes(s)
     );
 
     setFiltered(result);
@@ -70,7 +73,7 @@ const AdminTransactions = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/transactions/${transaction.transaction_id}`
+        `https://online-stock-photo.onrender.com/api/transactions/${transaction.transaction_id}`
       );
 
       if (!res.ok) throw new Error("Không thể tải chi tiết đơn hàng");
@@ -139,7 +142,14 @@ const AdminTransactions = () => {
     } else if (currentPage <= 3) {
       pages.push(1, 2, 3, 4, "...", totalPages);
     } else if (currentPage >= totalPages - 2) {
-      pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      pages.push(
+        1,
+        "...",
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages
+      );
     } else {
       pages.push(
         1,
@@ -194,7 +204,10 @@ const AdminTransactions = () => {
     return (
       <div className="alert alert-danger mt-4">
         <strong>Lỗi:</strong> {error}
-        <button className="btn btn-primary btn-sm ms-3" onClick={fetchTransactions}>
+        <button
+          className="btn btn-primary btn-sm ms-3"
+          onClick={fetchTransactions}
+        >
           Thử lại
         </button>
       </div>
@@ -203,7 +216,6 @@ const AdminTransactions = () => {
 
   return (
     <div className="container-fluid p-4">
-
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold">💳 Quản lý đơn hàng</h2>
@@ -217,8 +229,15 @@ const AdminTransactions = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button className="btn btn-success me-2" onClick={exportExcel}>📊 Xuất Excel</button>
-          <button className="btn btn-outline-primary" onClick={fetchTransactions}>🔄 Làm mới</button>
+          <button className="btn btn-success me-2" onClick={exportExcel}>
+            📊 Xuất Excel
+          </button>
+          <button
+            className="btn btn-outline-primary"
+            onClick={fetchTransactions}
+          >
+            🔄 Làm mới
+          </button>
         </div>
       </div>
 
@@ -237,7 +256,9 @@ const AdminTransactions = () => {
           <div className="card shadow-sm">
             <div className="card-body">
               <h6 className="text-muted mb-1">Tổng doanh thu</h6>
-              <h3 className="fw-bold text-success">{formatCurrency(totalRevenue)}</h3>
+              <h3 className="fw-bold text-success">
+                {formatCurrency(totalRevenue)}
+              </h3>
             </div>
           </div>
         </div>
@@ -304,11 +325,19 @@ const AdminTransactions = () => {
               <tbody>
                 {currentTransactions.map((t) => (
                   <tr key={t.transaction_id}>
-                    <td><span className="badge bg-secondary">#{t.transaction_id}</span></td>
-                    <td><strong>{t.full_name || "Không rõ"}</strong></td>
+                    <td>
+                      <span className="badge bg-secondary">
+                        #{t.transaction_id}
+                      </span>
+                    </td>
+                    <td>
+                      <strong>{t.full_name || "Không rõ"}</strong>
+                    </td>
                     <td className="text-muted">{t.user_id}</td>
 
-                    <td><span className="badge bg-info">{t.total_items} ảnh</span></td>
+                    <td>
+                      <span className="badge bg-info">{t.total_items} ảnh</span>
+                    </td>
 
                     <td className="fw-bold text-success">
                       {formatCurrency(t.total_price)}
@@ -343,7 +372,10 @@ const AdminTransactions = () => {
           <nav>
             <ul className="pagination">
               <li className={`page-item ${currentPage === 1 && "disabled"}`}>
-                <button className="page-link" onClick={() => goToPage(currentPage - 1)}>
+                <button
+                  className="page-link"
+                  onClick={() => goToPage(currentPage - 1)}
+                >
                   ‹ Trước
                 </button>
               </li>
@@ -358,15 +390,25 @@ const AdminTransactions = () => {
                   {page === "..." ? (
                     <span className="page-link">...</span>
                   ) : (
-                    <button className="page-link" onClick={() => goToPage(page)}>
+                    <button
+                      className="page-link"
+                      onClick={() => goToPage(page)}
+                    >
                       {page}
                     </button>
                   )}
                 </li>
               ))}
 
-              <li className={`page-item ${currentPage === totalPages && "disabled"}`}>
-                <button className="page-link" onClick={() => goToPage(currentPage + 1)}>
+              <li
+                className={`page-item ${
+                  currentPage === totalPages && "disabled"
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => goToPage(currentPage + 1)}
+                >
                   Sau ›
                 </button>
               </li>
@@ -377,12 +419,16 @@ const AdminTransactions = () => {
 
       {/* Modal */}
       {showDetailModal && (
-        <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
+        >
           <div className="modal-dialog modal-lg modal-dialog-centered">
             <div className="modal-content">
-
               <div className="modal-header">
-                <h5 className="modal-title">📦 Chi tiết đơn #{selectedTransaction?.transaction_id}</h5>
+                <h5 className="modal-title">
+                  📦 Chi tiết đơn #{selectedTransaction?.transaction_id}
+                </h5>
                 <button className="btn-close" onClick={closeModal}></button>
               </div>
 
@@ -390,13 +436,22 @@ const AdminTransactions = () => {
                 <h6 className="fw-bold mb-3">Thông tin đơn hàng</h6>
 
                 <div className="row">
-                  <div className="col-md-6 mb-2"><strong>Mã đơn:</strong> #{selectedTransaction?.transaction_id}</div>
-                  <div className="col-md-6 mb-2"><strong>Khách hàng:</strong> {selectedTransaction?.full_name}</div>
-
-                  <div className="col-md-6 mb-2"><strong>User ID:</strong> {selectedTransaction?.user_id}</div>
+                  <div className="col-md-6 mb-2">
+                    <strong>Mã đơn:</strong> #
+                    {selectedTransaction?.transaction_id}
+                  </div>
+                  <div className="col-md-6 mb-2">
+                    <strong>Khách hàng:</strong>{" "}
+                    {selectedTransaction?.full_name}
+                  </div>
 
                   <div className="col-md-6 mb-2">
-                    <strong>Số lượng:</strong> {selectedTransaction?.total_items} ảnh
+                    <strong>User ID:</strong> {selectedTransaction?.user_id}
+                  </div>
+
+                  <div className="col-md-6 mb-2">
+                    <strong>Số lượng:</strong>{" "}
+                    {selectedTransaction?.total_items} ảnh
                   </div>
 
                   <div className="col-md-6 mb-2">
@@ -407,11 +462,13 @@ const AdminTransactions = () => {
                   </div>
 
                   <div className="col-md-6 mb-2">
-                    <strong>Trạng thái:</strong> {statusBadge(selectedTransaction?.status)}
+                    <strong>Trạng thái:</strong>{" "}
+                    {statusBadge(selectedTransaction?.status)}
                   </div>
 
                   <div className="col-md-6 mb-2">
-                    <strong>Thời gian:</strong> {formatDate(selectedTransaction?.created_at)}
+                    <strong>Thời gian:</strong>{" "}
+                    {formatDate(selectedTransaction?.created_at)}
                   </div>
                 </div>
 
@@ -462,14 +519,14 @@ const AdminTransactions = () => {
               </div>
 
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={closeModal}>Đóng</button>
+                <button className="btn btn-secondary" onClick={closeModal}>
+                  Đóng
+                </button>
               </div>
-
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 };

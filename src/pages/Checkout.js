@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, ListGroup, Alert, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  ListGroup,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
 import axios from "axios";
 import { auth } from "../firebase";
 import { toast } from "react-toastify";
@@ -26,9 +35,9 @@ function Checkout() {
 
       const token = await user.getIdToken();
       const response = await axios.get(
-        `http://localhost:5000/api/cart/${user.uid}`,
+        `https://online-stock-photo.onrender.com/api/cart/${user.uid}`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -66,24 +75,23 @@ function Checkout() {
 
       // Gửi danh sách giỏ hàng sang VNPay API
       const res = await axios.post(
-        "http://localhost:5000/api/vnpay/create-payment",
+        "https://online-stock-photo.onrender.com/api/vnpay/create-payment",
         {
           userId: user.uid,
           items: cartItems.map((item) => ({
             photo_id: item.photo_id,
             price: item.price,
-            quantity: item.quantity
+            quantity: item.quantity,
           })),
-          totalPrice: calculateTotal()
+          totalPrice: calculateTotal(),
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       // Redirect sang VNPay
       window.location.href = res.data.paymentUrl;
-
     } catch (err) {
       console.error("❌ Lỗi khi tạo thanh toán VNPay:", err);
       toast.error("Không thể tạo thanh toán VNPay!");
@@ -100,9 +108,9 @@ function Checkout() {
       const token = await user.getIdToken();
 
       await axios.delete(
-        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+        `https://online-stock-photo.onrender.com/api/cart/${user.uid}/${photoId}`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -124,10 +132,10 @@ function Checkout() {
       const token = await user.getIdToken();
 
       await axios.put(
-        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+        `https://online-stock-photo.onrender.com/api/cart/${user.uid}/${photoId}`,
         { quantity: newQuantity },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -177,7 +185,11 @@ function Checkout() {
                       src={item.image_url}
                       alt={item.title}
                       className="img-fluid rounded"
-                      style={{ maxHeight: "150px", objectFit: "cover", width: "100%" }}
+                      style={{
+                        maxHeight: "150px",
+                        objectFit: "cover",
+                        width: "100%",
+                      }}
                     />
                   </Col>
                   <Col md={6}>
@@ -189,7 +201,9 @@ function Checkout() {
                       <Button
                         size="sm"
                         variant="outline-secondary"
-                        onClick={() => handleUpdateQuantity(item.photo_id, item.quantity - 1)}
+                        onClick={() =>
+                          handleUpdateQuantity(item.photo_id, item.quantity - 1)
+                        }
                         disabled={item.quantity <= 1}
                       >
                         -
@@ -198,7 +212,9 @@ function Checkout() {
                       <Button
                         size="sm"
                         variant="outline-secondary"
-                        onClick={() => handleUpdateQuantity(item.photo_id, item.quantity + 1)}
+                        onClick={() =>
+                          handleUpdateQuantity(item.photo_id, item.quantity + 1)
+                        }
                       >
                         +
                       </Button>

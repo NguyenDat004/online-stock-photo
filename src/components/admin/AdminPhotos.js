@@ -4,7 +4,7 @@ const AdminPhotos = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -16,7 +16,7 @@ const AdminPhotos = () => {
     title: "",
     category: "",
     description: "",
-    price: 0
+    price: 0,
   });
 
   // Categories từ database
@@ -30,7 +30,9 @@ const AdminPhotos = () => {
   const fetchPhotos = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/photos/all-admin");
+      const res = await fetch(
+        "https://online-stock-photo.onrender.com/api/photos/all-admin"
+      );
 
       if (!res.ok) throw new Error("Không thể tải danh sách ảnh");
 
@@ -47,9 +49,11 @@ const AdminPhotos = () => {
   // Lấy danh sách categories từ database
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/categories");
+      const res = await fetch(
+        "https://online-stock-photo.onrender.com/api/categories"
+      );
       if (!res.ok) throw new Error("Không thể tải danh mục");
-      
+
       const data = await res.json();
       setCategories(data);
     } catch (err) {
@@ -62,16 +66,19 @@ const AdminPhotos = () => {
   // -----------------------
   const openEditModal = (photo) => {
     setEditingPhoto(photo);
-    
+
     // Kiểm tra xem category hiện tại có trong danh sách categories không
-    const categoryExists = categories.some(cat => cat.name === photo.category);
-    
+    const categoryExists = categories.some(
+      (cat) => cat.name === photo.category
+    );
+
     setEditForm({
       title: photo.title || "",
       // Nếu category không tồn tại trong dropdown hoặc là "N/A", set thành rỗng để bắt chọn lại
-      category: (categoryExists && photo.category !== "N/A") ? photo.category : "",
+      category:
+        categoryExists && photo.category !== "N/A" ? photo.category : "",
       description: photo.description || "",
-      price: photo.price || 0
+      price: photo.price || 0,
     });
     setShowEditModal(true);
   };
@@ -86,7 +93,7 @@ const AdminPhotos = () => {
       title: "",
       category: "",
       description: "",
-      price: 0
+      price: 0,
     });
   };
 
@@ -99,13 +106,16 @@ const AdminPhotos = () => {
     console.log("📤 Sending update:", editForm);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/photos/${editingPhoto.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(editForm),
-      });
+      const res = await fetch(
+        `https://online-stock-photo.onrender.com/api/photos/${editingPhoto.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editForm),
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -123,7 +133,7 @@ const AdminPhotos = () => {
 
       alert("✅ Cập nhật ảnh thành công!");
       closeEditModal();
-      
+
       // Reload lại data từ server để đảm bảo đồng bộ
       fetchPhotos();
     } catch (err) {
@@ -139,9 +149,12 @@ const AdminPhotos = () => {
     if (!window.confirm("Bạn có chắc muốn xóa ảnh này?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/photos/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `https://online-stock-photo.onrender.com/api/photos/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!res.ok) throw new Error("Xóa thất bại");
 
@@ -160,7 +173,7 @@ const AdminPhotos = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/photos/${id}/approve`,
+        `https://online-stock-photo.onrender.com/api/photos/${id}/approve`,
         {
           method: "PUT",
         }
@@ -169,11 +182,9 @@ const AdminPhotos = () => {
       if (!res.ok) throw new Error("Duyệt thất bại");
 
       const data = await res.json();
-      
+
       setPhotos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, status: "Đã duyệt" } : p
-        )
+        prev.map((p) => (p.id === id ? { ...p, status: "Đã duyệt" } : p))
       );
       alert(data.message);
     } catch (err) {
@@ -211,21 +222,36 @@ const AdminPhotos = () => {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
       if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, '...', totalPages);
+        pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
-    
+
     return pages;
   };
 
@@ -264,15 +290,16 @@ const AdminPhotos = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
           <span className="text-muted">
-            Hiển thị {startIndex + 1} - {Math.min(endIndex, photos.length)} trong tổng số {photos.length} ảnh
+            Hiển thị {startIndex + 1} - {Math.min(endIndex, photos.length)}{" "}
+            trong tổng số {photos.length} ảnh
           </span>
         </div>
-        
+
         <div className="d-flex align-items-center gap-2">
           <label className="mb-0 me-2">Hiển thị:</label>
-          <select 
-            className="form-select form-select-sm" 
-            style={{ width: 'auto' }}
+          <select
+            className="form-select form-select-sm"
+            style={{ width: "auto" }}
             value={itemsPerPage}
             onChange={handleItemsPerPageChange}
           >
@@ -310,7 +337,9 @@ const AdminPhotos = () => {
 
                     <td>
                       <img
-                        src={photo.image_url || "https://via.placeholder.com/60"}
+                        src={
+                          photo.image_url || "https://via.placeholder.com/60"
+                        }
                         alt={photo.title}
                         style={{
                           width: "60px",
@@ -325,7 +354,9 @@ const AdminPhotos = () => {
 
                     <td>
                       <span className="badge bg-info">
-                        {photo.category && photo.category !== "N/A" ? photo.category : "N/A"}
+                        {photo.category && photo.category !== "N/A"
+                          ? photo.category
+                          : "N/A"}
                       </span>
                     </td>
 
@@ -334,7 +365,9 @@ const AdminPhotos = () => {
                     </td>
 
                     <td>
-                      <strong className="text-primary">{photo.sold || 0}</strong>
+                      <strong className="text-primary">
+                        {photo.sold || 0}
+                      </strong>
                     </td>
 
                     <td>
@@ -372,9 +405,7 @@ const AdminPhotos = () => {
             </table>
 
             {photos.length === 0 && (
-              <p className="text-center text-muted mt-3">
-                Không có ảnh nào.
-              </p>
+              <p className="text-center text-muted mt-3">Không có ảnh nào.</p>
             )}
           </div>
         </div>
@@ -386,9 +417,11 @@ const AdminPhotos = () => {
           <nav>
             <ul className="pagination mb-0">
               {/* Previous Button */}
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
@@ -398,11 +431,13 @@ const AdminPhotos = () => {
 
               {/* Page Numbers */}
               {getPageNumbers().map((page, index) => (
-                <li 
-                  key={index} 
-                  className={`page-item ${page === currentPage ? 'active' : ''} ${page === '...' ? 'disabled' : ''}`}
+                <li
+                  key={index}
+                  className={`page-item ${
+                    page === currentPage ? "active" : ""
+                  } ${page === "..." ? "disabled" : ""}`}
                 >
-                  {page === '...' ? (
+                  {page === "..." ? (
                     <span className="page-link">...</span>
                   ) : (
                     <button
@@ -416,9 +451,13 @@ const AdminPhotos = () => {
               ))}
 
               {/* Next Button */}
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
@@ -432,35 +471,35 @@ const AdminPhotos = () => {
 
       {/* EDIT MODAL */}
       {showEditModal && (
-        <div 
-          className="modal fade show d-block" 
-          tabIndex="-1" 
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">✏️ Chỉnh sửa ảnh</h5>
-                <button 
-                  type="button" 
-                  className="btn-close" 
+                <button
+                  type="button"
+                  className="btn-close"
                   onClick={closeEditModal}
                 ></button>
               </div>
-              
+
               <form onSubmit={handleUpdatePhoto}>
                 <div className="modal-body">
                   {/* Preview ảnh */}
                   {editingPhoto?.image_url && (
                     <div className="text-center mb-3">
-                      <img 
-                        src={editingPhoto.image_url} 
+                      <img
+                        src={editingPhoto.image_url}
                         alt="Preview"
                         style={{
-                          maxWidth: '100%',
-                          maxHeight: '200px',
-                          objectFit: 'cover',
-                          borderRadius: '8px'
+                          maxWidth: "100%",
+                          maxHeight: "200px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
                         }}
                       />
                     </div>
@@ -475,7 +514,9 @@ const AdminPhotos = () => {
                       type="text"
                       className="form-control"
                       value={editForm.title}
-                      onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, title: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -488,7 +529,9 @@ const AdminPhotos = () => {
                     <select
                       className="form-select"
                       value={editForm.category}
-                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, category: e.target.value })
+                      }
                       required
                     >
                       <option value="">-- Chọn danh mục --</option>
@@ -498,12 +541,21 @@ const AdminPhotos = () => {
                         </option>
                       ))}
                     </select>
-                    {editingPhoto?.category && editingPhoto.category !== "N/A" && 
-                     !categories.some(cat => cat.name === editingPhoto.category) && (
-                      <div className="alert alert-warning mt-2 mb-0" role="alert">
-                        <small>⚠️ Danh mục hiện tại "{editingPhoto.category}" không có trong danh sách. Vui lòng chọn danh mục mới.</small>
-                      </div>
-                    )}
+                    {editingPhoto?.category &&
+                      editingPhoto.category !== "N/A" &&
+                      !categories.some(
+                        (cat) => cat.name === editingPhoto.category
+                      ) && (
+                        <div
+                          className="alert alert-warning mt-2 mb-0"
+                          role="alert"
+                        >
+                          <small>
+                            ⚠️ Danh mục hiện tại "{editingPhoto.category}" không
+                            có trong danh sách. Vui lòng chọn danh mục mới.
+                          </small>
+                        </div>
+                      )}
                   </div>
 
                   {/* Mô tả */}
@@ -513,7 +565,12 @@ const AdminPhotos = () => {
                       className="form-control"
                       rows="4"
                       value={editForm.description}
-                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="Nhập mô tả chi tiết về ảnh..."
                     />
                   </div>
@@ -527,7 +584,12 @@ const AdminPhotos = () => {
                       type="number"
                       className="form-control"
                       value={editForm.price}
-                      onChange={(e) => setEditForm({ ...editForm, price: Number(e.target.value) })}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          price: Number(e.target.value),
+                        })
+                      }
                       required
                       min="0"
                       step="1000"
@@ -536,17 +598,14 @@ const AdminPhotos = () => {
                 </div>
 
                 <div className="modal-footer">
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary" 
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
                     onClick={closeEditModal}
                   >
                     Hủy
                   </button>
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                  >
+                  <button type="submit" className="btn btn-primary">
                     💾 Lưu thay đổi
                   </button>
                 </div>

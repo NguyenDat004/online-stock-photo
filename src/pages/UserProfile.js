@@ -20,7 +20,7 @@ function UserProfile() {
       if (currentUser) {
         try {
           const res = await axios.get(
-            `http://localhost:5000/api/users/${encodeURIComponent(
+            `https://online-stock-photo.onrender.com/api/users/${encodeURIComponent(
               currentUser.email
             )}`
           );
@@ -52,7 +52,7 @@ function UserProfile() {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/users/${userData.uid}/avatar`,
+        `https://online-stock-photo.onrender.com/api/users/${userData.uid}/avatar`,
         form,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -72,7 +72,7 @@ function UserProfile() {
   const handleSave = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/users/${userData.uid}`,
+        `https://online-stock-photo.onrender.com/api/users/${userData.uid}`,
         formData
       );
 
@@ -205,8 +205,7 @@ function UserProfile() {
             </p>
 
             <p className="fs-6 text-muted">
-              <strong>Ngày tạo:</strong>{" "}
-              {formatDate(userData.created_at)}
+              <strong>Ngày tạo:</strong> {formatDate(userData.created_at)}
             </p>
 
             <div className="text-center">

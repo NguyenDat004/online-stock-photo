@@ -24,7 +24,9 @@ const AdminCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/categories");
+      const res = await fetch(
+        "https://online-stock-photo.onrender.com/api/categories"
+      );
       if (!res.ok) throw new Error("Không thể tải danh sách danh mục");
 
       const data = await res.json();
@@ -72,11 +74,14 @@ const AdminCategories = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://online-stock-photo.onrender.com/api/categories",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!res.ok) throw new Error("Thêm danh mục thất bại");
 
@@ -97,7 +102,7 @@ const AdminCategories = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/categories/${currentCategory.id}`,
+        `https://online-stock-photo.onrender.com/api/categories/${currentCategory.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -124,9 +129,12 @@ const AdminCategories = () => {
     if (!window.confirm("Bạn có chắc muốn xóa danh mục này?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/categories/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `https://online-stock-photo.onrender.com/api/categories/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!res.ok) throw new Error("Xóa thất bại");
 
@@ -165,21 +173,36 @@ const AdminCategories = () => {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
       if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, '...', totalPages);
+        pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
-    
+
     return pages;
   };
 
@@ -196,7 +219,10 @@ const AdminCategories = () => {
     return (
       <div className="alert alert-danger mt-4">
         <strong>Lỗi: </strong> {error}
-        <button className="btn btn-primary btn-sm ms-3" onClick={fetchCategories}>
+        <button
+          className="btn btn-primary btn-sm ms-3"
+          onClick={fetchCategories}
+        >
           Thử lại
         </button>
       </div>
@@ -208,7 +234,10 @@ const AdminCategories = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fw-bold">📁 Quản lý danh mục</h2>
         <div>
-          <button className="btn btn-outline-primary me-2" onClick={fetchCategories}>
+          <button
+            className="btn btn-outline-primary me-2"
+            onClick={fetchCategories}
+          >
             🔄 Làm mới
           </button>
           <button className="btn btn-primary" onClick={openAddModal}>
@@ -220,15 +249,16 @@ const AdminCategories = () => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
           <span className="text-muted">
-            Hiển thị {startIndex + 1} - {Math.min(endIndex, categories.length)} trong tổng số {categories.length} danh mục
+            Hiển thị {startIndex + 1} - {Math.min(endIndex, categories.length)}{" "}
+            trong tổng số {categories.length} danh mục
           </span>
         </div>
-        
+
         <div className="d-flex align-items-center gap-2">
           <label className="mb-0 me-2">Hiển thị:</label>
-          <select 
-            className="form-select form-select-sm" 
-            style={{ width: 'auto' }}
+          <select
+            className="form-select form-select-sm"
+            style={{ width: "auto" }}
             value={itemsPerPage}
             onChange={handleItemsPerPageChange}
           >
@@ -300,9 +330,11 @@ const AdminCategories = () => {
         <div className="d-flex justify-content-center align-items-center mt-4">
           <nav>
             <ul className="pagination mb-0">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
@@ -311,23 +343,32 @@ const AdminCategories = () => {
               </li>
 
               {getPageNumbers().map((page, index) => (
-                <li 
-                  key={index} 
-                  className={`page-item ${page === currentPage ? 'active' : ''} ${page === '...' ? 'disabled' : ''}`}
+                <li
+                  key={index}
+                  className={`page-item ${
+                    page === currentPage ? "active" : ""
+                  } ${page === "..." ? "disabled" : ""}`}
                 >
-                  {page === '...' ? (
+                  {page === "..." ? (
                     <span className="page-link">...</span>
                   ) : (
-                    <button className="page-link" onClick={() => goToPage(page)}>
+                    <button
+                      className="page-link"
+                      onClick={() => goToPage(page)}
+                    >
                       {page}
                     </button>
                   )}
                 </li>
               ))}
 
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
@@ -354,7 +395,11 @@ const AdminCategories = () => {
                 <h5 className="modal-title">
                   {editMode ? "✏️ Sửa danh mục" : "➕ Thêm danh mục mới"}
                 </h5>
-                <button type="button" className="btn-close" onClick={closeModal}></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={closeModal}
+                ></button>
               </div>
 
               <div className="modal-body">
@@ -386,10 +431,18 @@ const AdminCategories = () => {
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={closeModal}
+                >
                   Hủy
                 </button>
-                <button type="button" className="btn btn-primary" onClick={handleSubmit}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleSubmit}
+                >
                   {editMode ? "💾 Cập nhật" : "➕ Thêm mới"}
                 </button>
               </div>
