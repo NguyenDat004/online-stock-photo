@@ -23,6 +23,15 @@ function WithdrawRequests() {
     toast.success(`Yêu cầu đã được ${status}`);
     loadData();
   };
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <Card className="p-4">
@@ -60,7 +69,7 @@ function WithdrawRequests() {
                   {item.status}
                 </Badge>
               </td>
-              <td>{new Date(item.created_at).toLocaleString()}</td>
+              <td>{formatDate(item.created_at)}</td>
               <td>
                 {item.status === "pending" ? (
                   <>

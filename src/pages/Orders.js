@@ -38,6 +38,16 @@ function Orders() {
     }
   }, [navigate]);
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
@@ -65,7 +75,7 @@ function Orders() {
                 <td>{order.transaction_id}</td>
                 <td>{order.total_price.toLocaleString()} VND</td>
                 <td>{order.status}</td>
-                <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                <td>{formatDate(order.created_at)}</td>
                 <td>{order.total_items}</td>
                 <td>
                   <Button

@@ -267,6 +267,15 @@ function PhotoDetail() {
       });
     }
   };
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -306,7 +315,7 @@ function PhotoDetail() {
           </p>
           <p>
             <strong>Ngày đăng:</strong>{" "}
-            {new Date(photo.created_at).toLocaleDateString()}
+            {formatDate(photo.created_at)}
           </p>
           <p className="photo-detail-price">
             <strong>Giá:</strong> {Number(photo.price).toLocaleString()} VNĐ
@@ -413,7 +422,7 @@ function PhotoDetail() {
                   <p>{review.comment}</p>
                   <small className="text-muted">
                     Đăng bởi {review.user_name || "Ẩn Danh"} vào{" "}
-                    {new Date(review.created_at).toLocaleString()}
+                    {formatDate(review.created_at)}
                   </small>
                 </li>
               );

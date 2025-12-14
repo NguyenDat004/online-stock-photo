@@ -90,6 +90,15 @@ function UserProfile() {
       });
     }
   };
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   if (loading)
     return <div className="text-center mt-5">Đang tải thông tin...</div>;
@@ -197,7 +206,7 @@ function UserProfile() {
 
             <p className="fs-6 text-muted">
               <strong>Ngày tạo:</strong>{" "}
-              {new Date(userData.created_at).toLocaleString("vi-VN")}
+              {formatDate(userData.created_at)}
             </p>
 
             <div className="text-center">

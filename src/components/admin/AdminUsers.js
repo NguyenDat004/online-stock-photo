@@ -150,6 +150,16 @@ const AdminUsers = () => {
     return pages;
   };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   if (loading) return <div className="text-center mt-4">Đang tải...</div>;
   if (error)
     return (
@@ -224,7 +234,7 @@ const AdminUsers = () => {
                   <td>{user.full_name}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
-                  <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                  <td>{formatDate(user.created_at)}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-warning me-2"
