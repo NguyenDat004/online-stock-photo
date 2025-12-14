@@ -1,9 +1,9 @@
-// Navbar.jsx
+// Navbar.js
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./Navbar.module.css"; // 🔹 Import CSS module
 
@@ -93,6 +93,17 @@ function Navbar() {
                     Kho Ảnh
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className={`nav-link ${styles.navLink}`} to="/orders">
+                    Đơn hàng
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className={`nav-link ${styles.navLink}`} to="/wallet">
+                    Ví tiền
+                  </Link>
+                </li>
+                
               </>
             )}
             {userData?.role === "admin" && (
@@ -111,12 +122,25 @@ function Navbar() {
             {user ? (
               <>
                 <li className="nav-item d-flex align-items-center me-3">
-                  <Link to="/profile" className="nav-link text-warning fw-bold">
-                    👤 {userData?.full_name || user.displayName || user.email}
+                  <Link
+                    to="/profile"
+                    className="nav-link text-warning fw-bold d-flex align-items-center"
+                  >
+                    <img
+                      src={
+                        userData?.avatar_url ||
+                        "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                      }
+                      alt="Avatar"
+                      className="rounded-circle me-2"
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    {userData?.full_name || user.displayName || user.email}
                   </Link>
-                </li>
-
-                <li className="nav-item">
                   <button
                     className={`btn btn-outline-light ${styles.logoutBtn}`}
                     onClick={handleLogout}

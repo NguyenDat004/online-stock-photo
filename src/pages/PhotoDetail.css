@@ -1,146 +1,348 @@
 /* Container tổng thể */
 .photo-detail-container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 2rem 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center; /* Canh giữa nội dung */
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem 1rem;
 }
 
-/* Ảnh chính và thông tin ảnh */
-  /* Ảnh chính */
-  .photo-detail-image {
-    flex: 1 1 450px;
-    max-width: 500px;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
-    cursor: zoom-in;
+/* Layout chính cho ảnh và thông tin */
+.photo-detail-container .row {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Container ảnh - Cố định tỷ lệ */
+.photo-detail-container .col-md-6:first-child {
+  flex: 1;
+  min-width: 0; /* Cho phép flex shrink */
+}
+
+.photo-detail-image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* Tỷ lệ 4:3 - có thể điều chỉnh */
+  background: #f5f5f5;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Ảnh chính - Object-fit để giữ tỷ lệ */
+.photo-detail-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Giữ nguyên tỷ lệ ảnh, không bị cắt */
+  background: #fff;
+  cursor: zoom-in;
+  transition: transform 0.3s ease;
+}
+
+.photo-detail-image:hover {
+  transform: scale(1.02);
+}
+
+/* Thông tin ảnh */
+.photo-detail-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.photo-detail-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #222;
+  line-height: 1.3;
+}
+
+.photo-detail-info p {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.photo-detail-info p strong {
+  color: #333;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.photo-detail-price {
+  color: #28a745;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f0f9f4;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+/* Nút hành động */
+.photo-detail-btn {
+  font-size: 1.1rem;
+  padding: 0.9rem 2rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  width: fit-content;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.photo-detail-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+/* Phần đánh giá */
+.mt-5 {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e9ecef;
+}
+
+.mt-5 h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* Form đánh giá */
+form.mb-4 {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.mb-2 {
+  margin-bottom: 1rem;
+}
+
+textarea.form-control {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+textarea.form-control:focus {
+  border-color: #28a745;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* Danh sách review */
+.list-group {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.list-group-item {
+  border: 1px solid #e9ecef;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  transition: box-shadow 0.3s;
+  position: relative;
+}
+
+.list-group-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.list-group-item p {
+  margin: 0.75rem 0;
+  color: #333;
+  line-height: 1.6;
+  padding-right: 80px; /* Tạo khoảng trống cho nút xóa */
+}
+
+.list-group-item small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #6c757d;
+}
+
+/* Nút xóa review - Góc phải giữa */
+.review-delete-btn {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  padding: 0.35rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+
+}
+
+.review-delete-btn:hover {
+  background-color: #c82333;
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Modal toàn màn hình */
+.photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+  animation: fadeIn 0.3s ease;
+}
+
+.photo-modal-image {
+  max-width: 95%;
+  max-height: 95vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+  animation: zoomIn 0.4s ease;
+}
+
+.photo-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 48px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s;
+  z-index: 10000;
+}
+
+.photo-modal-close:hover {
+  transform: scale(1.2);
+  color: #ff4444;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
-  
-  .photo-detail-image:hover {
-    transform: scale(1.02);
+  to {
+    opacity: 1;
   }
-  
-  /* Thông tin ảnh */
-  .photo-detail-info {
-    flex: 1 1 350px;
-    max-width: 500px;
-    display: flex;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive cho tablet */
+@media (max-width: 992px) {
+  .photo-detail-container .row {
     flex-direction: column;
   }
-  
+
+  .photo-detail-image-wrapper {
+    padding-bottom: 66.67%; /* Tỷ lệ 3:2 cho tablet */
+  }
+
   .photo-detail-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #333;
+    font-size: 1.75rem;
   }
-  
-  .photo-detail-info p {
-    font-size: 1.1rem;
-    margin-bottom: 0.7rem;
-    color: #555;
-    line-height: 1.5;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .photo-detail-container {
+    padding: 1rem 0.5rem;
   }
-  
+
+  .photo-detail-container .row {
+    gap: 1.5rem;
+  }
+
+  .photo-detail-image-wrapper {
+    padding-bottom: 100%; /* Tỷ lệ 1:1 cho mobile */
+  }
+
+  .photo-detail-title {
+    font-size: 1.5rem;
+    text-align: left;
+  }
+
   .photo-detail-price {
-    color: #28a745;
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin: 1rem 0;
+    font-size: 1.5rem;
   }
-  
-  /* Nút hành động */
+
   .photo-detail-btn {
-    font-size: 1.1rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    transition: 0.3s ease;
-    width: fit-content;
+    width: 100%;
+    text-align: center;
   }
-  
-  .photo-detail-btn:hover {
-    background-color: #218838;
-  }
-  
-  /* Modal toàn màn hình */
-  .photo-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-  
-  .photo-modal-image {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 0 20px #ffffffb3;
-    animation: fadeInZoom 0.4s ease;
-  }
-  
+
   .photo-modal-close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: white;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-    user-select: none;
+    top: 10px;
+    right: 15px;
+    font-size: 36px;
   }
-  
-  /* Hiệu ứng mở modal */
-  @keyframes fadeInZoom {
-    from {
-      opacity: 0;
-      transform: scale(0.85);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+
+  form.mb-4 {
+    padding: 1rem;
   }
-  
-  /* Responsive cho mobile */
-  @media (max-width: 768px) {
-    .photo-detail-container {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .photo-detail-image,
-    .photo-detail-info {
-      max-width: 100%;
-      flex: 1 1 100%;
-    }
-  
-    .photo-detail-title {
-      text-align: center;
-    }
-  
-    .photo-detail-info p,
-    .photo-detail-price {
-      text-align: center;
-    }
-  
-    .photo-detail-btn {
-      margin: auto;
-    }
+}
+
+/* Xử lý ảnh portrait (dọc) và landscape (ngang) */
+.photo-detail-image[data-orientation="portrait"] {
+  object-fit: contain;
+}
+
+.photo-detail-image[data-orientation="landscape"] {
+  object-fit: contain;
+}
+
+/* Loading state */
+.photo-detail-image-wrapper.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
   }
-  
+  100% {
+    background-position: -200% 0;
+  }
+}

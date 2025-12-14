@@ -6,6 +6,9 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👁️ icon mắt
+import { signInWithPopup } from "firebase/auth";
+import { googleProvider } from "../firebase";
+
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -76,6 +79,29 @@ function Register() {
       setError("Đăng ký thất bại.");
     }
   };
+
+  const handleGoogleRegister = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const token = await user.getIdToken();
+  
+      await axios.post("http://localhost:5000/api/auth/google", {
+        token,
+        fullName: user.displayName,
+        email: user.email,
+      });
+  
+      toast.success("Đăng ký bằng Google thành công!", {
+        autoClose: 1000,
+        onClose: () => navigate("/login"),
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Không thể đăng ký bằng Google");
+    }
+  };
+  
 
   return (
     <div className="container mt-5 mb-5">
@@ -170,6 +196,18 @@ function Register() {
           {/* Nút đăng ký */}
           <button type="submit" className="btn btn-success w-100">
             Đăng ký
+          </button>
+          <button
+            type="button"
+            onClick={handleGoogleRegister}
+            className="btn btn-danger w-100 mt-3 d-flex align-items-center justify-content-center gap-2"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png"
+              alt="Google"
+              style={{ width: "20px" }}
+            />
+            Đăng ký bằng Google
           </button>
         </form>
       </div>

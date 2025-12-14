@@ -8,10 +8,26 @@ import Cart from "./pages/Cart";
 import Upload from "./pages/Upload";
 import Checkout from "./pages/Checkout";
 import PhotoDetail from "./pages/PhotoDetail";
-import Admin from "./pages/Admin";
+import Orders from "./pages/Orders";
+import OrderDetail from "./pages/OrderDetail";
+// import Admin from "./pages/Admin";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import Wallet from "./pages/Wallet";
+import WithdrawRequest from "./pages/WithdrawRequest";
+
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import AdminRoute from "./components/AdminRoute";
+// Admin Components
+import AdminLayout from "./components/admin/AdminLayout";
+import Dashboard from "./components/admin/Dashboard";
+import Photos from "./components/admin/AdminPhotos";
+import Categories from "./components/admin/AdminCategories";
+import Users from "./components/admin/AdminUsers";
+import AdminRoute from "./components/admin/AdminRoute";
+import Transaction from "./components/admin/AdminTransactions";
+import AdminWithdrawRequests from "./components/admin/WithdrawRequests";
+
 import Download from "./pages/Download";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,13 +49,16 @@ function App() {
   return (
     <Router>
       <ToastContainer />
+
       <div
         className="app-wrapper"
         style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
       >
         <Navbar />
+
         <div className="main-content" style={{ flex: 1 }}>
           <Routes>
+            {/* User Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -49,17 +68,34 @@ function App() {
             <Route path="/photo/:id" element={<PhotoDetail />} />
             <Route path="/download" element={<Download />} />
             <Route path="/profile" element={<UserProfile />} />
-            {/* Admin Route */}
+            <Route path="/orders" element={<Orders />} />
+            <Route
+              path="/order-detail/:transactionId"
+              element={<OrderDetail />}
+            />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/withdraw-request" element={<WithdrawRequest />} />
+
+            {/* Admin Routes */}
             <Route
               path="/admin"
               element={
                 <AdminRoute>
-                  <Admin />
+                  <AdminLayout />
                 </AdminRoute>
               }
-            />
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="photos" element={<Photos />} />
+              <Route path="withdraw-requests" element={<AdminWithdrawRequests />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="users" element={<Users />} />
+              <Route path="transactions" element={<Transaction />} />
+            </Route>
           </Routes>
         </div>
+
         <Footer />
       </div>
     </Router>

@@ -1,0 +1,29 @@
+.cart-card {
+    border-radius: 16px !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08) !important;
+    border: none !important;
+  }
+  
+  .cart-row:hover {
+    background: #fafafa !important;
+    transition: 0.2s;
+  }
+  
+  .cart-img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    object-fit: cover;
+  }
+  
+  .form-check-input {
+    width: 20px !important;
+    height: 20px !important;
+    cursor: pointer;
+  }
+  
+  .price-highlight {
+    color: #e63946;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  

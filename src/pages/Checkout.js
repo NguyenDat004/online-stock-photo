@@ -1,62 +1,121 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Button, ListGroup, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
 import { auth } from "../firebase";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 function Checkout() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    address: "",
-    cardNumber: "",
-    expiry: "",
-    cvc: "",
-  });
-
-  const [cartItems, setCartItems] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
-    const fetchCart = async () => {
-      const unsubscribe = auth.onAuthStateChanged(async (user) => {
-        if (!user) return;
-
-        try {
-          const token = await user.getIdToken();
-          const res = await axios.get(
-            `http://localhost:5000/api/cart/${user.uid}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          setCartItems(res.data);
-          const total = res.data.reduce((sum, item) => sum + item.price, 0);
-          setTotal(total);
-        } catch (err) {
-          console.error("❌ Lỗi khi lấy giỏ hàng:", err);
-        }
-      });
-
-      return () => unsubscribe();
-    };
-
     fetchCart();
   }, []);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const fetchCart = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        toast.warning("⚠️ Vui lòng đăng nhập!");
+        navigate("/login");
+        return;
+      }
+
+      const token = await user.getIdToken();
+      const response = await axios.get(
+        `http://localhost:5000/api/cart/${user.uid}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      setCartItems(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.error("❌ Lỗi khi lấy giỏ hàng:", err);
+      toast.error("Không thể tải giỏ hàng!");
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const calculateTotal = () => {
+    return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  };
+
+  // ⭐⭐ THANH TOÁN QUA VNPAY (ĐÃ SỬA) ⭐⭐
+  const handleCheckout = async () => {
+    try {
+      setCheckoutLoading(true);
+      const user = auth.currentUser;
+
+      if (!user) {
+        toast.error("Vui lòng đăng nhập!");
+        navigate("/login");
+        return;
+      }
+
+      if (cartItems.length === 0) {
+        toast.warning("Giỏ hàng trống!");
+        return;
+      }
+
+      const token = await user.getIdToken();
+
+      // Gửi danh sách giỏ hàng sang VNPay API
+      const res = await axios.post(
+        "http://localhost:5000/api/vnpay/create-payment",
+        {
+          userId: user.uid,
+          items: cartItems.map((item) => ({
+            photo_id: item.photo_id,
+            price: item.price,
+            quantity: item.quantity
+          })),
+          totalPrice: calculateTotal()
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      // Redirect sang VNPay
+      window.location.href = res.data.paymentUrl;
+
+    } catch (err) {
+      console.error("❌ Lỗi khi tạo thanh toán VNPay:", err);
+      toast.error("Không thể tạo thanh toán VNPay!");
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  const handleRemoveItem = async (photoId) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const token = await user.getIdToken();
+
+      await axios.delete(
+        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      toast.success("🗑️ Đã xóa khỏi giỏ hàng!");
+      fetchCart();
+    } catch (err) {
+      console.error("❌ Lỗi khi xóa:", err);
+      toast.error("Không thể xóa ảnh!");
+    }
+  };
+
+  const handleUpdateQuantity = async (photoId, newQuantity) => {
+    if (newQuantity < 1) return;
 
     try {
       const user = auth.currentUser;
@@ -64,169 +123,160 @@ function Checkout() {
 
       const token = await user.getIdToken();
 
-      await axios.post(
-        "http://localhost:5000/api/checkout",
+      await axios.put(
+        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
+        { quantity: newQuantity },
         {
-          userId: user.uid,
-          items: cartItems,
-          totalPrice: total,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
-      setSubmitted(true);
-      setCartItems([]);
-      setTotal(0);
-
-      // Chuyển sang trang Download sau khi thanh toán
-      setTimeout(() => {
-        navigate("/download");
-      }, 3000);
+      toast.success("✔️ Đã cập nhật số lượng!");
+      fetchCart();
     } catch (err) {
-      console.error("❌ Lỗi khi thanh toán:", err);
-      alert("Thanh toán thất bại");
+      console.error("❌ Lỗi khi cập nhật:", err);
+      toast.error("Không thể cập nhật số lượng!");
     }
   };
 
+  if (loading) {
+    return (
+      <Container className="text-center mt-5">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3">Đang tải giỏ hàng...</p>
+      </Container>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="info" className="text-center">
+          <h4>🛒 Giỏ hàng trống</h4>
+          <p>Hãy thêm ảnh vào giỏ hàng để tiếp tục mua sắm!</p>
+          <Button variant="primary" onClick={() => navigate("/")}>
+            Quay về trang chủ
+          </Button>
+        </Alert>
+      </Container>
+    );
+  }
+
   return (
-    <div className="container py-5">
-      <h2 className="mb-4">Thông tin thanh toán</h2>
+    <Container className="mt-5 mb-5">
+      <h2 className="mb-4">🛒 Giỏ hàng của bạn</h2>
 
-      {submitted ? (
-        <div className="alert alert-success">
-          <h4 className="alert-heading">🎉 Cảm ơn bạn!</h4>
-          <p>Đơn hàng của bạn đã được xử lý thành công. Đang chuyển hướng...</p>
-        </div>
-      ) : (
-        <>
-          {cartItems.length === 0 ? (
-            <p>Bạn chưa có ảnh nào trong giỏ hàng.</p>
-          ) : (
-            <>
-              <table className="table table-bordered align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>Ảnh</th>
-                    <th>Tên</th>
-                    <th>Giá</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {cartItems.map((item) => (
-                    <tr key={item.photo_id}>
-                      <td>
-                        <img
-                          src={item.image_url}
-                          alt={item.title}
-                          width="150"
-                          height="150"
-                          className="rounded object-cover border border-radius-3"
-                        />
-                      </td>
-                      <td>{item.title}</td>
-                      <td>{Number(item.price).toLocaleString()} VNĐ</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <h4 className="text-end">
-                Tổng cộng:{" "}
-                <strong className="text-danger">
-                  {Number(total).toLocaleString()} VNĐ
+      <Row>
+        <Col lg={8}>
+          <ListGroup>
+            {cartItems.map((item) => (
+              <ListGroup.Item key={item.id} className="mb-3">
+                <Row className="align-items-center">
+                  <Col md={3}>
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      className="img-fluid rounded"
+                      style={{ maxHeight: "150px", objectFit: "cover", width: "100%" }}
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <h5 className="mb-2">{item.title}</h5>
+                    <p className="text-success fw-bold mb-2">
+                      {Number(item.price).toLocaleString()} VNĐ
+                    </p>
+                    <div className="d-flex align-items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        onClick={() => handleUpdateQuantity(item.photo_id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        -
+                      </Button>
+                      <span className="fw-bold px-3">{item.quantity}</span>
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        onClick={() => handleUpdateQuantity(item.photo_id, item.quantity + 1)}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </Col>
+                  <Col md={3} className="text-end">
+                    <p className="fw-bold text-primary mb-3">
+                      {(item.price * item.quantity).toLocaleString()} VNĐ
+                    </p>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleRemoveItem(item.photo_id)}
+                    >
+                      🗑️ Xóa
+                    </Button>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Col>
+
+        <Col lg={4}>
+          <Card className="shadow-sm sticky-top" style={{ top: "20px" }}>
+            <Card.Body>
+              <h4 className="mb-4">📋 Tóm tắt đơn hàng</h4>
+
+              <div className="d-flex justify-content-between mb-2">
+                <span>Tổng số ảnh:</span>
+                <strong>{cartItems.length}</strong>
+              </div>
+
+              <div className="d-flex justify-content-between mb-2">
+                <span>Tổng số lượng:</span>
+                <strong>
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
                 </strong>
-              </h4>
+              </div>
 
-              <form onSubmit={handleSubmit} className="mt-4">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="mb-3">
-                      <label className="form-label">Họ và tên</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Email</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Địa chỉ</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                  </div>
+              <hr />
 
-                  <div className="col-md-6">
-                    <div className="mb-3">
-                      <label className="form-label">Số thẻ</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="cardNumber"
-                        value={formData.cardNumber}
-                        onChange={handleChange}
-                        required
-                        maxLength={16}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Ngày hết hạn</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="MM/YY"
-                        name="expiry"
-                        value={formData.expiry}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">CVC</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="cvc"
-                        value={formData.cvc}
-                        onChange={handleChange}
-                        required
-                        maxLength={3}
-                      />
-                    </div>
-                  </div>
-                </div>
+              <div className="d-flex justify-content-between mb-4">
+                <h5 className="mb-0">Tổng tiền:</h5>
+                <h5 className="text-success mb-0">
+                  {calculateTotal().toLocaleString()} VNĐ
+                </h5>
+              </div>
 
-                <button type="submit" className="btn btn-success mt-3">
-                  Xác nhận thanh toán
-                </button>
-              </form>
-            </>
-          )}
-        </>
-      )}
-    </div>
+              <Button
+                variant="success"
+                size="lg"
+                className="w-100"
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+              >
+                {checkoutLoading ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  "💳 Thanh toán qua VNPay"
+                )}
+              </Button>
+
+              <Button
+                variant="outline-secondary"
+                className="w-100 mt-2"
+                onClick={() => navigate("/")}
+              >
+                ← Tiếp tục mua sắm
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

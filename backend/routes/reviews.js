@@ -52,18 +52,17 @@ router.delete('/:reviewId', verifyToken, async (req, res) => {
     const review = reviewRes.rows[0];
 
     // Kiểm tra quyền: admin hoặc chính chủ
-    if (userRole !== 'admin' && review.user_id !== userId) {
+    if (userRole === 'admin' || review.user_id === userId) {
+      // Xoá review
+      await pool.query('DELETE FROM reviews WHERE review_id = $1', [reviewId]);
+      return res.json({ message: 'Đã xoá review thành công' });
+    } else {
       return res.status(403).json({ message: 'Bạn không có quyền xoá review này' });
     }
-
-    // Xoá review
-    await pool.query('DELETE FROM reviews WHERE review_id = $1', [reviewId]);
-    res.json({ message: 'Đã xoá review thành công' });
   } catch (err) {
     console.error('❌ Lỗi khi xoá review:', err);
     res.status(500).json({ message: 'Lỗi server khi xoá review' });
   }
 });
-
 
 module.exports = router;

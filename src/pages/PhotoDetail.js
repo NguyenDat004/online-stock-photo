@@ -13,7 +13,16 @@ function PhotoDetail() {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
   const [user, setUser] = useState(null);
-  const [userData, setUserData] = useState(null); // 👈 Dùng để lấy tên và role từ DB
+  const [userData, setUserData] = useState(null);
+  const [imageLoading, setImageLoading] = useState(true);
+  
+  // ✅ THÊM: State kiểm tra trạng thái ảnh
+  const [photoStatus, setPhotoStatus] = useState({
+    isPurchased: false,
+    isInCart: false,
+    canAddToCart: true,
+    loading: true
+  });
 
   useEffect(() => {
     const fetchPhoto = async () => {
@@ -45,6 +54,9 @@ function PhotoDetail() {
             `http://localhost:5000/api/users/${currentUser.email}`
           );
           setUserData(res.data);
+          
+          // ✅ THÊM: Kiểm tra trạng thái ảnh khi user đăng nhập
+          checkPhotoStatus(currentUser);
         } catch (err) {
           console.error(
             "❌ Không lấy được thông tin người dùng từ server:",
@@ -53,6 +65,12 @@ function PhotoDetail() {
         }
       } else {
         setUserData(null);
+        setPhotoStatus({
+          isPurchased: false,
+          isInCart: false,
+          canAddToCart: true,
+          loading: false
+        });
       }
     });
 
@@ -62,8 +80,55 @@ function PhotoDetail() {
     return () => unsubscribe();
   }, [id]);
 
+  // ✅ THÊM: Function kiểm tra trạng thái ảnh
+  const checkPhotoStatus = async (currentUser = user) => {
+    try {
+      if (!currentUser) {
+        setPhotoStatus({
+          isPurchased: false,
+          isInCart: false,
+          canAddToCart: true,
+          loading: false
+        });
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+      const response = await axios.get(
+        `http://localhost:5000/api/photos/check-status/${id}/${currentUser.uid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(`✅ Photo ${id} status:`, response.data);
+      setPhotoStatus({
+        ...response.data,
+        loading: false
+      });
+    } catch (err) {
+      console.error("❌ Lỗi khi kiểm tra trạng thái ảnh:", err);
+      setPhotoStatus({
+        isPurchased: false,
+        isInCart: false,
+        canAddToCart: true,
+        loading: false
+      });
+    }
+  };
+
   const handleAddToCart = async () => {
     try {
+      if (!user) {
+        toast.warning("⚠️ Vui lòng đăng nhập để thêm vào giỏ hàng!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        return;
+      }
+
       const token = await auth.currentUser.getIdToken();
       const userId = auth.currentUser.uid;
 
@@ -82,16 +147,55 @@ function PhotoDetail() {
       );
 
       toast.success("🛒 Ảnh đã được thêm vào giỏ hàng!", {
-        position: "top-center",
+        position: "top-right",
         autoClose: 2000,
       });
+
+      // ✅ THÊM: Cập nhật trạng thái sau khi thêm thành công
+      setPhotoStatus(prev => ({
+        ...prev,
+        isInCart: true,
+        canAddToCart: false
+      }));
+
     } catch (err) {
       console.error("Lỗi khi thêm ảnh vào giỏ:", err);
-      console.error("Lỗi khi thêm ảnh vào giỏ:", err);
-      toast.error("Lỗi khi thêm vào giỏ hàng. Vui lòng thử lại.", {
-        position: "top-center",
-        autoClose: 2000,
-      });
+      
+      if (err.response?.status === 400) {
+        const errorMsg = err.response?.data?.message || "";
+
+        if (errorMsg.includes("đã mua")) {
+          toast.info("ℹ️ Bạn đã sở hữu ảnh này rồi!", {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          setPhotoStatus(prev => ({
+            ...prev,
+            isPurchased: true,
+            canAddToCart: false
+          }));
+        } else if (errorMsg.includes("đã có trong giỏ hàng")) {
+          toast.warning("⚠️ Ảnh này đã có trong giỏ hàng!", {
+            position: "top-right",
+            autoClose: 2000,
+          });
+          setPhotoStatus(prev => ({
+            ...prev,
+            isInCart: true,
+            canAddToCart: false
+          }));
+        } else {
+          toast.error("❌ Không thể thêm vào giỏ hàng!", {
+            position: "top-right",
+            autoClose: 2000,
+          });
+        }
+      } else {
+        toast.error("Lỗi khi thêm vào giỏ hàng. Vui lòng thử lại.", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      }
     }
   };
 
@@ -99,12 +203,18 @@ function PhotoDetail() {
     e.preventDefault();
 
     if (!user) {
-      alert("Bạn cần đăng nhập để gửi đánh giá.");
+      toast.info("⚠️ Vui lòng đăng nhập để gửi đánh giá!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
       return;
     }
 
     if (newReview.rating < 1 || newReview.rating > 5) {
-      alert("Vui lòng chọn số sao từ 1 đến 5.");
+      toast.warning("⚠️ Vui lòng chọn đánh giá từ 1 đến 5 sao.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
       return;
     }
 
@@ -131,7 +241,10 @@ function PhotoDetail() {
       setNewReview({ rating: 0, comment: "" });
     } catch (err) {
       console.error("❌ Lỗi khi thêm review:", err);
-      alert("Không thể gửi đánh giá. Vui lòng thử lại.");
+      toast.error("Không thể gửi đánh giá. Vui lòng thử lại.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 
@@ -148,7 +261,10 @@ function PhotoDetail() {
       setReviews((prev) => prev.filter((r) => r.review_id !== reviewId));
     } catch (err) {
       console.error("❌ Lỗi khi xoá review:", err);
-      alert("Không thể xoá review. Vui lòng thử lại.");
+      toast.error("Không thể xoá đánh giá. Vui lòng thử lại.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 
@@ -166,13 +282,16 @@ function PhotoDetail() {
     <div className="container py-5 photo-detail-container">
       <div className="row">
         <div className="col-md-6">
-          <img
-            src={photo.image_url}
-            alt={photo.title}
-            className="img-fluid rounded photo-detail-image"
-            onClick={openModal}
-            style={{ cursor: "zoom-in" }}
-          />
+          <div className={`photo-detail-image-wrapper ${imageLoading ? 'loading' : ''}`}>
+            <img
+              src={photo.image_url}
+              alt={photo.title}
+              className="photo-detail-image"
+              onClick={openModal}
+              onLoad={() => setImageLoading(false)}
+              onError={() => setImageLoading(false)}
+            />
+          </div>
         </div>
         <div className="col-md-6 photo-detail-info">
           <h2 className="photo-detail-title">{photo.title}</h2>
@@ -193,14 +312,40 @@ function PhotoDetail() {
             <strong>Giá:</strong> {Number(photo.price).toLocaleString()} VNĐ
           </p>
           <p>{photo.description}</p>
-          <button
-            className="btn btn-success mt-4 photo-detail-btn px-4 py-2 fw-bold"
-            onClick={handleAddToCart}
-          >
-            🛒 Thêm vào giỏ hàng
-          </button>
+          
+          {/* ✅ THAY ĐỔI: Hiển thị nút dựa trên trạng thái */}
+          {photoStatus.loading ? (
+            <button
+              className="btn btn-secondary mt-4 photo-detail-btn px-4 py-2 fw-bold"
+              disabled
+            >
+              Đang kiểm tra...
+            </button>
+          ) : photoStatus.isPurchased ? (
+            <button
+              className="btn btn-success mt-4 photo-detail-btn px-4 py-2 fw-bold"
+              disabled
+            >
+              ✓ Đã sở hữu
+            </button>
+          ) : photoStatus.isInCart ? (
+            <button
+              className="btn btn-secondary mt-4 photo-detail-btn px-4 py-2 fw-bold"
+              disabled
+            >
+              ✓ Đã có trong giỏ hàng
+            </button>
+          ) : (
+            <button
+              className="btn btn-success mt-4 photo-detail-btn px-4 py-2 fw-bold"
+              onClick={handleAddToCart}
+            >
+              🛒 Thêm vào giỏ hàng
+            </button>
+          )}
         </div>
       </div>
+
       <div className="mt-5">
         <h3>Đánh giá & Nhận xét</h3>
         <form onSubmit={handleAddReview} className="mb-4">
@@ -237,39 +382,46 @@ function PhotoDetail() {
           <p>Chưa có đánh giá nào.</p>
         ) : (
           <ul className="list-group">
-            {reviews.map((review) => (
-              <li key={review.review_id} className="list-group-item">
-                <div>
-                  {[...Array(review.rating)].map((_, i) => (
-                    <span key={i} style={{ color: "gold" }}>
-                      ★
-                    </span>
-                  ))}
-                  {[...Array(5 - review.rating)].map((_, i) => (
-                    <span key={i} style={{ color: "gray" }}>
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <p>{review.comment}</p>
-                <small className="text-muted">
-                  Đăng bởi {review.user_name || "Ẩn Danh"} vào{" "}
-                  {new Date(review.created_at).toLocaleString()}
-                </small>
-                {(user?.uid === review.user_id ||
-                  userData?.role === "admin") && (
-                  <button
-                    className="btn btn-sm btn-danger ms-2"
-                    onClick={() => handleDeleteReview(review.review_id)}
-                  >
-                    Xoá
-                  </button>
-                )}
-              </li>
-            ))}
+            {reviews.map((review) => {
+              // Kiểm tra quyền xóa - chỉ cho phép nếu là chủ review hoặc admin
+              const isOwner = user && user.uid === review.user_id;
+              const isAdmin = userData && userData.role === "admin";
+              const canDelete = isOwner || isAdmin;
+              
+              return (
+                <li key={review.review_id} className="list-group-item">
+                  {canDelete && (
+                    <button
+                      className="review-delete-btn"
+                      onClick={() => handleDeleteReview(review.review_id)}
+                    >
+                      Xoá
+                    </button>
+                  )}
+                  <div>
+                    {[...Array(review.rating)].map((_, i) => (
+                      <span key={i} style={{ color: "gold" }}>
+                        ★
+                      </span>
+                    ))}
+                    {[...Array(5 - review.rating)].map((_, i) => (
+                      <span key={i} style={{ color: "gray" }}>
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                  <p>{review.comment}</p>
+                  <small className="text-muted">
+                    Đăng bởi {review.user_name || "Ẩn Danh"} vào{" "}
+                    {new Date(review.created_at).toLocaleString()}
+                  </small>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
+
       {isModalOpen && (
         <div className="photo-modal" onClick={closeModal}>
           <img

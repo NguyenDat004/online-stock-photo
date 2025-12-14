@@ -1,0 +1,20 @@
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-topbar {
+    height: 60px;
+    background: #fff;
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .admin-content {
+    padding: 25px;
+  }
+  

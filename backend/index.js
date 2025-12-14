@@ -19,6 +19,11 @@ app.use("/uploads", express.static("uploads"));
 
 // ----------------- Định nghĩa các route -----------------
 
+// Admin - Thống kê Dashboard
+const adminStatsRouter = require("./routes/admin/AdminStats");
+app.use("/api/admin", adminStatsRouter);
+
+
 // Auth - Đăng ký, đăng nhập, xác thực người dùng
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
@@ -40,8 +45,26 @@ const categoryRoutes = require("./routes/categories");
 app.use("/api/categories", categoryRoutes);
 
 // Checkout - Thanh toán
-const checkoutRoutes = require("./routes/checkout");
-app.use("/api/checkout", checkoutRoutes);
+// const checkoutRoutes = require("./routes/checkout");
+// app.use("/api/checkout", checkoutRoutes);
+
+// VNPAY - Thanh toán qua VNPAY
+const vnpayRoutes = require("./routes/vnpay");
+app.use("/api/vnpay", vnpayRoutes);
+
+// Wallets - Ví điện tử người dùng
+const walletRoutes = require("./routes/wallet");
+app.use("/api/wallet", walletRoutes);
+
+// Withdrawals - Rút tiền cho người bán
+const withdrawRoutes = require("./routes/withdraw");
+app.use("/api/withdraw", withdrawRoutes);
+
+
+
+// Transactions - Lịch sử giao dịch
+const transactionRoutes = require("./routes/transactions");
+app.use("/api/transactions", transactionRoutes);
 
 // Downloads - Kho ảnh đã mua
 const downloadRoutes = require("./routes/downloads");
@@ -59,5 +82,10 @@ app.get("/", (req, res) => {
 // ----------------- Khởi động Server -----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
+  console.log(`
+╔════════════════════════════════════════╗
+║  🚀 Server đang chạy trên port ${PORT}    ║
+║  📍 http://localhost:${PORT}              ║
+╚════════════════════════════════════════╝
+  `);
 });

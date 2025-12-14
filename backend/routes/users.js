@@ -7,7 +7,7 @@ const admin = require("../config/firebase-admin");
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT uid, full_name, email, role, created_at FROM users ORDER BY created_at DESC"
+      "SELECT uid, full_name, email, role, created_at,avatar_url  FROM users ORDER BY created_at DESC"
     );
     res.json(result.rows);
   } catch (err) {
@@ -24,7 +24,7 @@ router.get("/:email", async (req, res) => {
   console.log("✅ Nhận request lấy user theo email:", email);
   try {
     const result = await pool.query(
-      `SELECT uid, full_name, email, role, created_at FROM users WHERE email = $1`,
+      `SELECT uid, full_name, email, role, created_at, avatar_url FROM users WHERE email = $1`,
       [email]
     );
 
@@ -85,5 +85,31 @@ router.delete("/:id", async (req, res) => {
     client.release();
   }
 });
+
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+const { updateAvatar } = require("../controllers/userController");
+
+// Middleware để xử lý upload avatar
+router.put("/:uid/avatar", upload.single("avatar"), updateAvatar);
+
+
+// PUT /api/users/:uid – Cập nhật thông tin người dùng
+router.put("/:uid", async (req, res) => {
+  const { uid } = req.params;
+  const { full_name } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE users SET full_name = $1 WHERE uid = $2 RETURNING *`,
+      [full_name, uid]
+    );
+
+    res.json({ message: "Cập nhật thành công", user: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server" });
+  }
+});
+
 
 module.exports = router;

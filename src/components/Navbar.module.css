@@ -1,5 +1,18 @@
 /* Navbar.module.css */
 
+.nav-item {
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.logoutBtn {
+  margin-left: 10px; /* Khoảng cách giữa nút và avatar */
+  height: 40px; /* Đảm bảo chiều cao bằng với avatar */
+  display: flex;
+  align-items: center; /* Căn giữa nội dung trong nút */
+  justify-content: center; /* Căn giữa nội dung trong nút */
+}
+
 .navbarCustom {
   background-color: #0d1b2a; /* Navy dark */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);

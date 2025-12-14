@@ -5,6 +5,8 @@ import axios from "axios";
 function Home() {
   const [photos, setPhotos] = useState([]);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
+  const [categories, setCategories] = useState(["Tất cả"]); // Lấy từ database
+  const [loading, setLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tất cả");
@@ -13,23 +15,33 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  const categories = [
-    "Tất cả",
-    ...Array.from(new Set(photos.map((photo) => photo.category))),
-  ];
+  // Hàm fetch photos (tách riêng để có thể gọi lại)
+  const fetchPhotos = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get("http://localhost:5000/api/photos");
+      setPhotos(res.data);
+    } catch (err) {
+      console.error("❌ Lỗi khi tải ảnh:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Hàm fetch categories từ database
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/categories");
+      setCategories(["Tất cả", ...res.data.map(cat => cat.name)]);
+    } catch (err) {
+      console.error("❌ Lỗi khi tải danh mục:", err);
+    }
+  };
 
   // Lấy dữ liệu ảnh từ backend
   useEffect(() => {
-    const fetchPhotos = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/photos");
-        setPhotos(res.data);
-      } catch (err) {
-        console.error("❌ Lỗi khi tải ảnh:", err);
-      }
-    };
-
     fetchPhotos();
+    fetchCategories(); // Lấy danh mục từ database
   }, []);
 
   // Lọc, tìm kiếm, sắp xếp
@@ -87,7 +99,27 @@ function Home() {
         </div>
       </div>
 
-      <h2 className="text-center mb-4">📸 Kho Ảnh Mới Nhất</h2>
+      {/* Header với nút Tải lại */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>📸 Kho Ảnh Mới Nhất</h2>
+        <button 
+          className="btn btn-outline-primary"
+          onClick={() => {
+            fetchPhotos();
+            fetchCategories(); // Cập nhật cả danh mục
+          }}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Đang tải...
+            </>
+          ) : (
+            <>🔄 Tải lại</>
+          )}
+        </button>
+      </div>
 
       {/* Bộ lọc và tìm kiếm */}
       <div className="row mb-4">
@@ -138,11 +170,23 @@ function Home() {
         )}
       </div>
 
-      {/* Phân trang */}
+      {/* Phân trang - THÊM NÚT TRƯỚC/SAU */}
       {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4">
           <nav>
             <ul className="pagination">
+              {/* Nút Trước */}
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  className="page-link"
+                  disabled={currentPage === 1}
+                >
+                  ‹ Trước
+                </button>
+              </li>
+
+              {/* Các số trang */}
               {[...Array(totalPages)].map((_, i) => (
                 <li
                   key={i}
@@ -158,6 +202,17 @@ function Home() {
                   </button>
                 </li>
               ))}
+
+              {/* Nút Sau */}
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  className="page-link"
+                  disabled={currentPage === totalPages}
+                >
+                  Sau ›
+                </button>
+              </li>
             </ul>
           </nav>
         </div>
