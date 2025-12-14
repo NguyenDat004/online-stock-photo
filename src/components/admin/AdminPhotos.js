@@ -30,9 +30,7 @@ const AdminPhotos = () => {
   const fetchPhotos = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://online-stock-photo.onrender.com/api/photos/all-admin"
-      );
+      const res = await fetch("http://localhost:5000/api/photos/all-admin");
 
       if (!res.ok) throw new Error("Không thể tải danh sách ảnh");
 
@@ -49,9 +47,7 @@ const AdminPhotos = () => {
   // Lấy danh sách categories từ database
   const fetchCategories = async () => {
     try {
-      const res = await fetch(
-        "https://online-stock-photo.onrender.com/api/categories"
-      );
+      const res = await fetch("http://localhost:5000/api/categories");
       if (!res.ok) throw new Error("Không thể tải danh mục");
 
       const data = await res.json();
@@ -107,7 +103,7 @@ const AdminPhotos = () => {
 
     try {
       const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/photos/${editingPhoto.id}`,
+        `http://localhost:5000/api/photos/${editingPhoto.id}`,
         {
           method: "PUT",
           headers: {
@@ -149,12 +145,9 @@ const AdminPhotos = () => {
     if (!window.confirm("Bạn có chắc muốn xóa ảnh này?")) return;
 
     try {
-      const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/photos/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`http://localhost:5000/api/photos/${id}`, {
+        method: "DELETE",
+      });
 
       if (!res.ok) throw new Error("Xóa thất bại");
 
@@ -173,7 +166,7 @@ const AdminPhotos = () => {
 
     try {
       const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/photos/${id}/approve`,
+        `http://localhost:5000/api/photos/${id}/approve`,
         {
           method: "PUT",
         }

@@ -21,9 +21,7 @@ function Upload() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(
-          "https://online-stock-photo.onrender.com/api/categories"
-        );
+        const res = await axios.get("http://localhost:5000/api/categories");
         setCategories(res.data); // [{ id, name }]
       } catch (err) {
         console.error("Lỗi khi lấy danh mục:", err);
@@ -107,16 +105,12 @@ function Upload() {
       imageData.append("price", parseInt(formData.price));
       imageData.append("uploader", auth.currentUser.uid);
 
-      await axios.post(
-        "https://online-stock-photo.onrender.com/api/photos/upload",
-        imageData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await axios.post("http://localhost:5000/api/photos/upload", imageData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setStatus("✅ Tải ảnh lên thành công!");
       localStorage.setItem("photo_uploaded", "true");

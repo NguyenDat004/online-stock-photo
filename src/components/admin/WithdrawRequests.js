@@ -8,7 +8,7 @@ function WithdrawRequests() {
 
   const loadData = async () => {
     const res = await axios.get(
-      "https://online-stock-photo.onrender.com/api/withdraw/admin/list"
+      "http://localhost:5000/api/withdraw/admin/list"
     );
     setRequests(res.data);
   };
@@ -19,7 +19,7 @@ function WithdrawRequests() {
 
   const updateStatus = async (id, status) => {
     const res = await axios.put(
-      `https://online-stock-photo.onrender.com/api/withdraw/admin/update/${id}`,
+      `http://localhost:5000/api/withdraw/admin/update/${id}`,
       { status }
     );
     toast.success(`Yêu cầu đã được ${status}`);

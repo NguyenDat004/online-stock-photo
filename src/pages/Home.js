@@ -19,9 +19,7 @@ function Home() {
   const fetchPhotos = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        "https://online-stock-photo.onrender.com/api/photos"
-      );
+      const res = await axios.get("http://localhost:5000/api/photos");
       setPhotos(res.data);
     } catch (err) {
       console.error("❌ Lỗi khi tải ảnh:", err);
@@ -33,9 +31,7 @@ function Home() {
   // Hàm fetch categories từ database
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(
-        "https://online-stock-photo.onrender.com/api/categories"
-      );
+      const res = await axios.get("http://localhost:5000/api/categories");
       setCategories(["Tất cả", ...res.data.map((cat) => cat.name)]);
     } catch (err) {
       console.error("❌ Lỗi khi tải danh mục:", err);

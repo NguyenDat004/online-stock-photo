@@ -19,7 +19,7 @@ function Navbar() {
       if (currentUser) {
         try {
           const res = await axios.get(
-            `https://online-stock-photo.onrender.com/api/users/${currentUser.email}`
+            `http://localhost:5000/api/users/${currentUser.email}`
           );
           setUserData(res.data);
         } catch (err) {

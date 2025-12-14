@@ -17,7 +17,7 @@ function Cart() {
 
         const token = await user.getIdToken();
         const res = await axios.get(
-          `https://online-stock-photo.onrender.com/api/cart/${user.uid}`,
+          `http://localhost:5000/api/cart/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ function Cart() {
       const token = await user.getIdToken();
 
       await axios.delete(
-        `https://online-stock-photo.onrender.com/api/cart/${user.uid}/${photoId}`,
+        `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ function Cart() {
       await Promise.all(
         selectedItems.map((photoId) =>
           axios.delete(
-            `https://online-stock-photo.onrender.com/api/cart/${user.uid}/${photoId}`,
+            `http://localhost:5000/api/cart/${user.uid}/${photoId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -145,7 +145,7 @@ function Cart() {
 
       // Gọi API tạo URL thanh toán VNPay - GỬI selectedPhotoIds
       const res = await axios.post(
-        "https://online-stock-photo.onrender.com/api/vnpay/create-payment",
+        "http://localhost:5000/api/vnpay/create-payment",
         {
           selectedPhotoIds: selectedItems, // ✅ GỬI DANH SÁCH PHOTO_ID ĐÃ CHỌN
         },

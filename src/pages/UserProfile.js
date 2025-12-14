@@ -20,7 +20,7 @@ function UserProfile() {
       if (currentUser) {
         try {
           const res = await axios.get(
-            `https://online-stock-photo.onrender.com/api/users/${encodeURIComponent(
+            `http://localhost:5000/api/users/${encodeURIComponent(
               currentUser.email
             )}`
           );
@@ -52,7 +52,7 @@ function UserProfile() {
 
     try {
       const res = await axios.put(
-        `https://online-stock-photo.onrender.com/api/users/${userData.uid}/avatar`,
+        `http://localhost:5000/api/users/${userData.uid}/avatar`,
         form,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -72,7 +72,7 @@ function UserProfile() {
   const handleSave = async () => {
     try {
       await axios.put(
-        `https://online-stock-photo.onrender.com/api/users/${userData.uid}`,
+        `http://localhost:5000/api/users/${userData.uid}`,
         formData
       );
 

@@ -21,7 +21,7 @@ function Download() {
         const token = await user.getIdToken();
 
         const res = await axios.get(
-          `https://online-stock-photo.onrender.com/api/downloads/${user.uid}`,
+          `http://localhost:5000/api/downloads/${user.uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ function Download() {
       const token = await auth.currentUser.getIdToken();
 
       const res = await axios.get(
-        `https://online-stock-photo.onrender.com/api/photos/${photoId}/download`,
+        `http://localhost:5000/api/photos/${photoId}/download`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -27,9 +27,7 @@ const Dashboard = () => {
       setLoading(true);
       console.log("📊 Fetching dashboard stats...");
 
-      const response = await fetch(
-        "https://online-stock-photo.onrender.com/api/admin/dashboard"
-      );
+      const response = await fetch("http://localhost:5000/api/admin/dashboard");
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

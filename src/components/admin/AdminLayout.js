@@ -12,7 +12,7 @@ const AdminLayout = () => {
     const loadPending = async () => {
       try {
         const res = await axios.get(
-          "https://online-stock-photo.onrender.com/api/withdraw/admin/list"
+          "http://localhost:5000/api/withdraw/admin/list"
         );
         const count = res.data.filter((x) => x.status === "pending").length;
         setPendingCount(count);

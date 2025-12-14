@@ -14,7 +14,7 @@ function AdminRoute({ children }) {
       if (user) {
         try {
           const res = await axios.get(
-            `https://online-stock-photo.onrender.com/api/users/${user.email}`
+            `http://localhost:5000/api/users/${user.email}`
           );
           setIsAdmin(res.data.role === "admin");
         } catch (err) {

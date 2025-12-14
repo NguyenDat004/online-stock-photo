@@ -23,9 +23,7 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://online-stock-photo.onrender.com/api/users"
-      );
+      const res = await fetch("http://localhost:5000/api/users");
       if (!res.ok) throw new Error("Không thể tải danh sách người dùng");
       const data = await res.json();
       setUsers(data);
@@ -67,7 +65,7 @@ const AdminUsers = () => {
 
     try {
       const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/users/${currentUser.uid}`,
+        `http://localhost:5000/api/users/${currentUser.uid}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -82,7 +80,7 @@ const AdminUsers = () => {
         avatarData.append("avatar", avatarFile);
 
         const avatarRes = await fetch(
-          `https://online-stock-photo.onrender.com/api/users/${currentUser.uid}/avatar`,
+          `http://localhost:5000/api/users/${currentUser.uid}/avatar`,
           {
             method: "PUT",
             body: avatarData,
@@ -104,12 +102,9 @@ const AdminUsers = () => {
     if (!window.confirm("Bạn có chắc muốn xóa người dùng này?")) return;
 
     try {
-      const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/users/${uid}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`http://localhost:5000/api/users/${uid}`, {
+        method: "DELETE",
+      });
 
       if (!res.ok) throw new Error("Xóa thất bại");
 

@@ -21,7 +21,7 @@ function Orders() {
 
       const token = await user.getIdToken();
       const response = await axios.get(
-        `https://online-stock-photo.onrender.com/api/transactions/history/${user.uid}`,
+        `http://localhost:5000/api/transactions/history/${user.uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

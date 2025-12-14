@@ -56,14 +56,11 @@ function Register() {
       await updateProfile(user, { displayName: fullName });
       const token = await user.getIdToken();
 
-      await axios.post(
-        "https://online-stock-photo.onrender.com/api/auth/register",
-        {
-          token,
-          fullName,
-          email,
-        }
-      );
+      await axios.post("http://localhost:5000/api/auth/register", {
+        token,
+        fullName,
+        email,
+      });
 
       toast.success("🎉 Đăng ký thành công!", {
         position: "top-right",
@@ -88,14 +85,11 @@ function Register() {
       const user = result.user;
       const token = await user.getIdToken();
 
-      await axios.post(
-        "https://online-stock-photo.onrender.com/api/auth/google",
-        {
-          token,
-          fullName: user.displayName,
-          email: user.email,
-        }
-      );
+      await axios.post("http://localhost:5000/api/auth/google", {
+        token,
+        fullName: user.displayName,
+        email: user.email,
+      });
 
       toast.success("Đăng ký bằng Google thành công!", {
         autoClose: 1000,

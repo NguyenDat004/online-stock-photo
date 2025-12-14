@@ -24,9 +24,7 @@ const AdminCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://online-stock-photo.onrender.com/api/categories"
-      );
+      const res = await fetch("http://localhost:5000/api/categories");
       if (!res.ok) throw new Error("Không thể tải danh sách danh mục");
 
       const data = await res.json();
@@ -74,14 +72,11 @@ const AdminCategories = () => {
     }
 
     try {
-      const res = await fetch(
-        "https://online-stock-photo.onrender.com/api/categories",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
       if (!res.ok) throw new Error("Thêm danh mục thất bại");
 
@@ -102,7 +97,7 @@ const AdminCategories = () => {
 
     try {
       const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/categories/${currentCategory.id}`,
+        `http://localhost:5000/api/categories/${currentCategory.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -129,12 +124,9 @@ const AdminCategories = () => {
     if (!window.confirm("Bạn có chắc muốn xóa danh mục này?")) return;
 
     try {
-      const res = await fetch(
-        `https://online-stock-photo.onrender.com/api/categories/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`http://localhost:5000/api/categories/${id}`, {
+        method: "DELETE",
+      });
 
       if (!res.ok) throw new Error("Xóa thất bại");
 

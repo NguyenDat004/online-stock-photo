@@ -21,7 +21,7 @@ function Wallet() {
 
         const token = await user.getIdToken();
         const res = await axios.get(
-          "https://online-stock-photo.onrender.com/api/wallet/balance",
+          "http://localhost:5000/api/wallet/balance",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

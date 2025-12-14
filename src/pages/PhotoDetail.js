@@ -27,9 +27,7 @@ function PhotoDetail() {
   useEffect(() => {
     const fetchPhoto = async () => {
       try {
-        const res = await axios.get(
-          `https://online-stock-photo.onrender.com/api/photos/${id}`
-        );
+        const res = await axios.get(`http://localhost:5000/api/photos/${id}`);
         setPhoto(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu ảnh:", error);
@@ -40,9 +38,7 @@ function PhotoDetail() {
 
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(
-          `https://online-stock-photo.onrender.com/api/reviews/${id}`
-        );
+        const res = await axios.get(`http://localhost:5000/api/reviews/${id}`);
         setReviews(res.data);
       } catch (error) {
         console.error("Lỗi khi lấy review:", error);
@@ -55,7 +51,7 @@ function PhotoDetail() {
       if (currentUser) {
         try {
           const res = await axios.get(
-            `https://online-stock-photo.onrender.com/api/users/${currentUser.email}`
+            `http://localhost:5000/api/users/${currentUser.email}`
           );
           setUserData(res.data);
 
@@ -99,7 +95,7 @@ function PhotoDetail() {
 
       const token = await currentUser.getIdToken();
       const response = await axios.get(
-        `https://online-stock-photo.onrender.com/api/photos/check-status/${id}/${currentUser.uid}`,
+        `http://localhost:5000/api/photos/check-status/${id}/${currentUser.uid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -137,7 +133,7 @@ function PhotoDetail() {
       const userId = auth.currentUser.uid;
 
       await axios.post(
-        "https://online-stock-photo.onrender.com/api/cart/add",
+        "http://localhost:5000/api/cart/add",
         {
           userId,
           photoId: photo.id,
@@ -225,7 +221,7 @@ function PhotoDetail() {
       const token = await auth.currentUser.getIdToken();
 
       const res = await axios.post(
-        "https://online-stock-photo.onrender.com/api/reviews",
+        "http://localhost:5000/api/reviews",
         {
           photo_id: id,
           user_id: user.uid,
@@ -255,14 +251,11 @@ function PhotoDetail() {
     try {
       const token = await auth.currentUser.getIdToken();
 
-      await axios.delete(
-        `https://online-stock-photo.onrender.com/api/reviews/${reviewId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:5000/api/reviews/${reviewId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setReviews((prev) => prev.filter((r) => r.review_id !== reviewId));
     } catch (err) {

@@ -27,10 +27,7 @@ function Login() {
       const user = result.user;
       const token = await user.getIdToken();
 
-      await axios.post(
-        "https://online-stock-photo.onrender.com/api/auth/google",
-        { token }
-      );
+      await axios.post("http://localhost:5000/api/auth/google", { token });
 
       toast.success("Đăng nhập Google thành công!", {
         autoClose: 800,
@@ -75,10 +72,7 @@ function Login() {
       const user = userCredential.user;
       const token = await user.getIdToken();
 
-      await axios.post(
-        "https://online-stock-photo.onrender.com/api/auth/login",
-        { token }
-      );
+      await axios.post("http://localhost:5000/api/auth/login", { token });
 
       toast.success("Đăng nhập thành công!", {
         autoClose: 500,
